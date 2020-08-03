@@ -1,3 +1,11 @@
 #mapid {
     height : 400px;
 }
+h1 {
+    text-align: center;
+}
+#restaurant_elt {
+    background-color:#EB984E;
+    color : white;
+    border: 8px solid #D68910;
+}

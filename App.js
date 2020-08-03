@@ -1,9 +1,11 @@
 class App {
-    constructor(mapEmplacement) {
+    constructor(mapEmplacement, restaurantData) {
         this.mapEmplacement = mapEmplacement;
+        this.restaurantsData = restaurantData;
     }
     init() {
-        let map = new Map(this.mapEmplacement);
-        map.init();
+        console.log(this.restaurantsData)
+        let map = new Map(this.mapEmplacement, this.restaurantsData);
+        map.getUserPosition();
     }
 }

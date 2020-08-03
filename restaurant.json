@@ -1,4 +1,4 @@
-[
+restaurantListe = [
     {
         "restaurantName": "Bronco",
         "address": "39 Rue des Petites Écuries, 75010 Paris",
@@ -23,12 +23,28 @@
         "ratings": [
             {
                 "stars": 5,
-                "comment": "Une minuscule pizzeria délicieuse cachée juste à côté du Sacré choeur !"
+                "comment": "Une minuscule pizzeria délicieuse cachée juste à côté du Sacré coeur !"
             },
             {
                 "stars": 3,
                 "comment": "J'ai trouvé ça correct, sans plus"
             }
         ]
+    },
+    {
+        "restaurantName": "Sandaya",
+        "address": "15, rue François Mermet, 69160 Tassin",
+        "lat": 45.758616,
+        "long": 4.772716,
+        "ratings": [
+            {
+                "stars": 5,
+                "comment": "Je recommande vivement! Très large choix de langoustes!"
+            },
+            {
+                "stars": 2,
+                "comment": "Service un peu long, le serveur sent la moule"
+            }
+        ]
     }
-]
+];
