@@ -1,11 +1,16 @@
 class App {
     constructor(mapEmplacement, restaurantData) {
         this.mapEmplacement = mapEmplacement;
-        this.restaurantsData = restaurantData;
+        this.restaurants = restaurantData;
+        this.restaurantCollection = [];
     }
     init() {
-        console.log(this.restaurantsData)
-        let map = new Map(this.mapEmplacement, this.restaurantsData);
+        this.restaurants.forEach(element => {
+            this.restaurantCollection.push(new Restaurant(element));
+        });
+        let map = new Map(this.mapEmplacement, this.restaurantCollection);
+
+
         map.getUserPosition();
     }
 }

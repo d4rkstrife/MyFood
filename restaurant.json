@@ -43,7 +43,7 @@ restaurantListe = [
             },
             {
                 "stars": 2,
-                "comment": "Service un peu long, le serveur sent la moule"
+                "comment": "Service un peu long, le serveur sent la moule."
             }
         ]
     }
