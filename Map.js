@@ -26,8 +26,10 @@ class Map {
                 fillOpacity: 0.5,
                 radius: 20
             }).addTo(mymap);
+            if (this.calculateDistance(this.latitude, this.longitude, element.latitude, element.longitude) < 1) {
+                element.render("restaurant_elt");
+            }
 
-            element.render("restaurant_elt");
 
 
         });
@@ -47,6 +49,16 @@ class Map {
     coordsInit(latitude, longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    calculateDistance(lat1, long1, lat2, long2) {
+        var p = 0.017453292519943295;    // Math.PI / 180
+        var c = Math.cos;
+        var a = 0.5 - c((lat2 - lat1) * p) / 2 +
+            c(lat1 * p) * c(lat2 * p) *
+            (1 - c((long2 - long1) * p)) / 2;
+
+        return 12742 * Math.asin(Math.sqrt(a));
     }
 
 }
