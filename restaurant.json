@@ -46,5 +46,121 @@ restaurantListe = [
                 "comment": "Service un peu long, le serveur sent la moule."
             }
         ]
+    },
+    {
+        "restaurantName": "McRonald",
+        "address": "146, avenue Charles de Gaulle, 69160 Tassin",
+        "lat": 45.757440,
+        "long": 4.773871,
+        "ratings": [
+            {
+                "stars": 1,
+                "comment": "Beurk"
+            },
+            {
+                "stars": 2,
+                "comment": "Nettoyez les tables!!"
+            },
+            {
+                "stars": 1,
+                "comment": "M'a rendu malade!"
+            },
+        ]
+    },
+    {
+        "restaurantName": "Qwick",
+        "address": "12, avenue General Brosset, 69160 Tassin",
+        "lat": 45.757779,
+        "long": 4.776536,
+        "ratings": [
+            {
+                "stars": 4,
+                "comment": "Bien meilleur que son concurrent"
+            },
+            {
+                "stars": 3,
+                "comment": "Un fast food correct"
+            }
+        ]
+    },
+    {
+        "restaurantName": "KurgerBing",
+        "address": "118, avenue Charles de Gaulle, 69160 Tassin",
+        "lat": 45.759157,
+        "long": 4.775752,
+        "ratings": [
+            {
+                "stars": 5,
+                "comment": "Comme un voyage au Texas"
+            },
+            {
+                "stars": 4,
+                "comment": "Le meilleur de tous"
+            }
+        ]
+    },
+    {
+        "restaurantName": "MikadosPizza",
+        "address": "17, avenue Marechal Foch, 69160 Tassin",
+        "lat": 45.759963,
+        "long": 4.773653,
+        "ratings": [
+            {
+                "stars": 1,
+                "comment": "J ai vu le Pizzaiolo cracher dans ma pizza!"
+            },
+            {
+                "stars": 2,
+                "comment": "Le livreur est tombé en mobilette avec ma pizza!"
+            }
+        ]
+    },
+    {
+        "restaurantName": "FabuloGrill",
+        "address": "8, avenue Mathieu Misery, 69160 Tassin",
+        "lat": 45.757716,
+        "long": 4.767311,
+        "ratings": [
+            {
+                "stars": 4,
+                "comment": "Viande de qualité, j ai mangé comme un cowboy"
+            },
+            {
+                "stars": 2,
+                "comment": "Peu de choix pour les enfants"
+            }
+        ]
+    },
+    {
+        "restaurantName": "BigPerdant",
+        "address": "43, avenue du 8 mai 45, 69160 Tassin",
+        "lat": 45.760639,
+        "long": 4.768282,
+        "ratings": [
+            {
+                "stars": 3,
+                "comment": "Burger sympa, sans plus"
+            },
+            {
+                "stars": 4,
+                "comment": "De vrai burgers artisanaux!"
+            }
+        ]
+    },
+    {
+        "restaurantName": "ShortePaille",
+        "address": "24, avenue de Lauterbourg, 69160 Tassin",
+        "lat": 45.759300,
+        "long": 4.778649,
+        "ratings": [
+            {
+                "stars": 2,
+                "comment": "Aucun respect des restrictions dues au Covid19"
+            },
+            {
+                "stars": 4,
+                "comment": "Buffet à volonté, produits de bonne qualité"
+            }
+        ]
     }
 ];
