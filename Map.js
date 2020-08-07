@@ -19,14 +19,15 @@ class Map {
         }).addTo(mymap);
         var marker = L.marker([this.latitude, this.longitude]).addTo(mymap);
         this.restaurant.forEach(element => {
-            console.log(element)
-            var circle = L.circle([element.latitude, element.longitude], {
-                color: 'red',
-                fillColor: '#f03',
-                fillOpacity: 0.5,
-                radius: 20
-            }).addTo(mymap);
             if (this.calculateDistance(this.latitude, this.longitude, element.latitude, element.longitude) < 1) {
+                console.log(element)
+                var circle = L.circle([element.latitude, element.longitude], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.5,
+                    radius: 20
+                }).addTo(mymap);
+
                 element.render("restaurant_elt");
             }
 
@@ -51,7 +52,7 @@ class Map {
         this.longitude = longitude;
     }
 
-    calculateDistance(lat1, long1, lat2, long2) {
+    calculateDistance(lat1, long1, lat2, long2) { //comparer position de l utilisateur avec la position du restaurant pour savoir si on doit l afficher
         var p = 0.017453292519943295;    // Math.PI / 180
         var c = Math.cos;
         var a = 0.5 - c((lat2 - lat1) * p) / 2 +
