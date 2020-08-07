@@ -20,7 +20,7 @@ class Map {
         var marker = L.marker([this.latitude, this.longitude]).addTo(mymap);
         this.restaurant.forEach(element => {
             console.log(element)
-            var circle = L.circle([element.latitude, element.longitude], {
+            let circle = L.circle([element.latitude, element.longitude], {
                 color: 'red',
                 fillColor: '#f03',
                 fillOpacity: 0.5,
