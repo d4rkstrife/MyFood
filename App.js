@@ -11,6 +11,6 @@ class App {
         let map = new Map(this.mapEmplacement, this.restaurantCollection);
 
 
-        map.getUserPosition();
+        map.init();
     }
 }

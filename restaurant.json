@@ -162,5 +162,21 @@ restaurantListe = [
                 "comment": "Buffet à volonté, produits de bonne qualité"
             }
         ]
-    }
+    },
+    {
+        "restaurantName": "ElPueblo",
+        "address": "21, rue Roger Radisson, 69005 Lyon",
+        "lat": 45.760232,
+        "long": 4.817879,
+        "ratings": [
+            {
+                "stars": 3,
+                "comment": "Petit resto mexicain sympa!"
+            },
+            {
+                "stars": 4,
+                "comment": "Olé!"
+            }
+        ]
+    },
 ];

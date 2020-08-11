@@ -12,9 +12,8 @@ class Restaurant {
         <h3 class="nom_restaurant">${this.name}</h3>
        </div>
         `);
-        this.ratingsRender(this.name);
-        //   }
     }
+
     ratingsRender(elementPosition) {
         this.rating.forEach(element => {
             $(`#${elementPosition}`).append(`
