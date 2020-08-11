@@ -8,4 +8,31 @@ h1 {
     background-color:#EB984E;
     color : white;
     border: 8px solid #D68910;
+    display: flex;
+    height: 98px;
+}
+.restaurant_div {
+    text-align: center;
+    border : 2px solid #684205;
+    width : 50%;
+}
+.user_comment {
+    display : flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.avis {
+    border : 2px solid black;
+    width : 25%;
+    text-align: center;
+}
+.nbr_etoiles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.image_etoile {
+    width : 20px;
+    height: 20px;
 }
