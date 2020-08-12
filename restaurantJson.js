@@ -1,4 +1,4 @@
-restaurantListe = [
+let restaurantListe = [
     {
         "restaurantName": "Bronco",
         "address": "39 Rue des Petites Écuries, 75010 Paris",
