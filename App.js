@@ -5,10 +5,12 @@ class App {
         this.restaurantCollection = [];
     }
     init() {
+        let filtre =  new Filtre("filter_button","minimum", "maximum");
+        filtre.init();
         this.restaurants.forEach(element => {
             this.restaurantCollection.push(new Restaurant(element));
         });
-        let map = new Map(this.mapEmplacement, this.restaurantCollection);
+        let map = new Map(this.mapEmplacement, this.restaurantCollection, filtre);
 
 
         map.init();

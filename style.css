@@ -1,5 +1,10 @@
+main {
+  display : flex;
+}
+
 #mapid {
-    height : 400px;
+    height : 600px;
+    width: 70%;
 }
 h1 {
     text-align: center;
@@ -9,12 +14,15 @@ h1 {
     color : white;
     border: 8px solid #D68910;
     display: flex;
-    height: 98px;
+    flex-direction: column;
+    height: 582px;
+    width : 20%;
+    overflow-x: auto; 
 }
 .restaurant_div {
     text-align: center;
     border : 2px solid #684205;
-    width : 50%;
+    width : 95%;
 }
 .user_comment {
     display : flex;

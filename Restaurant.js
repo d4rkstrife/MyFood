@@ -1,21 +1,27 @@
 class Restaurant {
     constructor(data) {
         this.name = data.restaurantName;
-        this.adress = data.address;
+        this.address = data.address;
         this.latitude = data.lat;
         this.longitude = data.long;
         this.rating = data.ratings;
         this.ratingAverage = this.calculateRatingAverage(this.rating)
     }
-    render(elementPosition) {
+    render(elementPosition, map) {
         $(`#${elementPosition}`).append(`
         <div id="${this.name}" class="restaurant_div">
         <h3 class="nom_restaurant">${this.name}</h3>
+        <p>${this.address}</p>
+        <div class="nbr_etoiles">
         <p>${this.ratingAverage}</p>
+        <img src="image/etoile.png" alt="image etoile" class="image_etoile">
+        </div>
+      
        </div>
         `);
         $(`#${this.name}`).on('click', () => {
             $(`.user_comment`).empty();
+          map.map.setView([this.latitude, this.longitude], 16);
             $(`.user_comment`).append(`
             <h3 class="nom_restaurant">${this.name}</h3>
             `);

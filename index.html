@@ -13,9 +13,38 @@
 </head>
 
 <body>
-    <h1>My Foods</h1>
+    
+    <header>
+      <h1>My Food</h1>
+      <form id="filtre">
+      <label for="minimum">Choisir les restaurants entre :</label>
+      <select name="minimum" id="minimum">
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <img src="image/etoile.png" alt="image etoile" class="image_etoile">
+      <label for="maximum"> et :</label>
+      <select name="maximum" id="maximum">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5" selected>5</option>
+      </select>
+      <img src="image/etoile.png" alt="image etoile" class="image_etoile">
+      <button type="submit" id="filter_button" value="Submit">Valider</button>
+      
+      
+    </form>
+    </header>
+    <main>
+    
     <div id="mapid"></div>
     <div id="restaurant_elt"></div>
+    </main>
     <div class="user_comment"></div>
 
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
@@ -24,6 +53,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.js"
         integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="restaurantJson.js"></script>
+    <script src="Filtre.js"></script>
     <script src="Map.js"></script>
     <script src="App.js"></script>
     <script src="Restaurant.js"></script>
