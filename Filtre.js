@@ -7,11 +7,10 @@ class Filtre {
     this.max = 5;
   }
   init(){
-    $(`#${this.elt}`).on('click', ()=> {
+    $(`#${this.elt}`).on('click', (event)=> {
+      event.preventDefault();
       this.min = $(`#${this.minElt}`).val();
       this.max = $(`#${this.maxElt}`).val();
-      console.log(this.min)
-      console.log(this.max)
     })
   }
   
