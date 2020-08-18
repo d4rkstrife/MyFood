@@ -20,9 +20,9 @@ class Restaurant {
       
        </div>
         `);
-        $(`#${this.name}`).on('click', () =>{
-          this.ratingsRender(map)
-          });
+        $(`#${this.name}`).on('click', () => {
+            this.ratingsRender(map)
+        });
     }
 
     calculateRatingAverage(rating) {
@@ -36,12 +36,12 @@ class Restaurant {
     ratingsRender(map) {
         $(`.user_comment`).empty();
         map.map.setView([this.latitude, this.longitude], 16);
-        map.getNearestRestaurant(this.latitude, this.longitude);
+        //     map.getNearestRestaurant(this.latitude, this.longitude);
         $(`.user_comment`).append(`
                     <h3 class="nom_restaurant">${this.name}</h3>
                     `);
         this.rating.forEach(element => {
-          $(`.user_comment`).append(`
+            $(`.user_comment`).append(`
                         <div class="avis">
                         <div class="nbr_etoiles">
                         <p class="stars_number">${element.stars}</p>
@@ -51,5 +51,5 @@ class Restaurant {
                         </div>
                         `);
         })
-    } 
+    }
 }
