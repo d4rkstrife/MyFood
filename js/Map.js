@@ -10,10 +10,9 @@ class Map {
   }
 
   init() {
-    let that = this;
     if (navigator.geolocation) { //le navigator prend en charger la localisation
       let watchId = navigator.geolocation.getCurrentPosition((position) => {
-        this.userPositionAcquired(position);
+        this.userPositionAcquired(position.coords.latitude, position.coords.longitude);
       },
 
         this.userPositionDenied
@@ -24,8 +23,8 @@ class Map {
     }
   }
 
-  userPositionAcquired(position) {
-    this.map = L.map(`${this.emplacement}`).setView([position.coords.latitude, position.coords.longitude], 16);
+  userPositionAcquired(latitude, longitude) {
+    this.map = L.map(`${this.emplacement}`).setView([latitude, longitude], 16);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
       maxZoom: 18,
@@ -34,28 +33,57 @@ class Map {
       zoomOffset: -1,
       accessToken: 'pk.eyJ1IjoiZDRya3N0cmlmZSIsImEiOiJja2QxdXc2cTUxMGx5MnJvN2N3azU1Z2FzIn0.ZkS1QneAeZBKnyju3c5CQA'
     }).addTo(this.map);
-    let marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(this.map);
-    this.getNearestRestaurant(position.coords.latitude, position.coords.longitude);
+    let marker = L.marker([latitude, longitude]).addTo(this.map);
+    this.getNearestRestaurant(latitude, longitude);
     this.map.addLayer(this.groupMarker);
 
 
     $('#filter_button').on('click', () => {
-      
+
       event.preventDefault();
       this.filtre.init(this)
     })
   }
 
   userPositionDenied() {
-    let latitude = window.prompt("latitude");
-    let longitude = window.prompt("longitude");
-    let position = {
-      "coords":
-      {
-        "latitude": latitude,
-        "longitude": longitude
-      }
+    let latitude;
+    let longitude;
+    let that = this;
+    $('#user_position').show();
+
+    function ajaxGet(url, callback) {
+      let req = new XMLHttpRequest();
+      req.open("GET", url);
+      req.addEventListener("load", function () {
+        if (req.status >= 200 && req.status < 400) {
+          // Appelle la fonction callback en lui passant la réponse de la requête
+          callback(req.responseText);
+        } else {
+          console.error(req.status + " " + req.statusText + " " + url);
+        }
+      });
+      req.addEventListener("error", function () {
+        console.error("Erreur réseau avec l'URL " + url);
+      });
+      req.send(null);
     }
+
+    $('#validate').on('click', (e) => {
+      e.preventDefault();
+
+      $('#user_position').hide();
+      console.log($('#code').val());
+      let codePostal = $('#code').val();
+      ajaxGet(`https://geo.api.gouv.fr/communes?codePostal=${codePostal}&fields=centre&format=json&geometry=centre`, function (reponse) {
+        let ville = JSON.parse(reponse);
+        latitude = ville[0].centre.coordinates[1];
+        longitude = ville[0].centre.coordinates[0];
+        console.log(latitude, longitude);
+      });
+      console.log(that.restaurant)
+
+
+    })
   }
 
   getNearestRestaurant() {
@@ -79,7 +107,7 @@ class Map {
         element.ratingsRender(this);
       });
     this.groupMarker.addLayer(circle);
-    
+
     $(`#restaurant_elt`).append(`
             <div id="${element.name}" class="restaurant_div">
             <h3 class="nom_restaurant">${element.name}</h3>
