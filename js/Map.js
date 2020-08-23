@@ -15,7 +15,7 @@ class Map {
         this.userPositionAcquired(position.coords.latitude, position.coords.longitude);
       },
 
-        this.userPositionDenied
+        this.userPositionDenied()
       );
 
     } else { //le navigateur ne prend pas en charge la localisation.
@@ -50,6 +50,7 @@ class Map {
     let longitude;
     let that = this;
     $('#user_position').show();
+    console.log(this)
 
     function ajaxGet(url, callback) {
       let req = new XMLHttpRequest();
@@ -78,9 +79,10 @@ class Map {
         let ville = JSON.parse(reponse);
         latitude = ville[0].centre.coordinates[1];
         longitude = ville[0].centre.coordinates[0];
-        console.log(latitude, longitude);
+        console.log(latitude, longitude, that);
+        that.userPositionAcquired(latitude, longitude);
       });
-      console.log(that.restaurant)
+      
 
 
     })
