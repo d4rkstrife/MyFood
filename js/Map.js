@@ -38,13 +38,11 @@ class Map {
     this.getNearestRestaurant(position.coords.latitude, position.coords.longitude);
     this.map.addLayer(this.groupMarker);
 
-    /*  this.map.on('drag', () => {
-        this.getNearestRestaurant(this.map.getCenter().lat, this.map.getCenter().lng);
-      })*/
 
     $('#filter_button').on('click', () => {
-      //  this.getNearestRestaurant(this.map.getCenter().lat, this.map.getCenter().lng);
-      this.map.removeLayer(this.groupMarker);
+      
+      event.preventDefault();
+      this.filtre.init(this)
     })
   }
 
@@ -60,13 +58,12 @@ class Map {
     }
   }
 
-  getNearestRestaurant(latitude, longitude) {
+  getNearestRestaurant() {
     $('#restaurant_elt').empty();
     this.restaurantNear = [];
     this.restaurant.forEach(element => {
       if (element.ratingAverage >= this.filtre.min && element.ratingAverage <= this.filtre.max) {
         this.restaurantRender(element);
-        element.render("restaurant_elt", this);
       }
     });
   }
@@ -82,6 +79,21 @@ class Map {
         element.ratingsRender(this);
       });
     this.groupMarker.addLayer(circle);
+    
+    $(`#restaurant_elt`).append(`
+            <div id="${element.name}" class="restaurant_div">
+            <h3 class="nom_restaurant">${element.name}</h3>
+            <p>${element.address}</p>
+            <div class="nbr_etoiles">
+            <p>${element.ratingAverage}</p>
+            <img src="image/etoile.png" alt="image etoile" class="image_etoile">
+            </div>
+          
+           </div>
+            `);
+    $(`#${element.name}`).on('click', () => {
+      element.ratingsRender(this)
+    });
   }
 
   /*   calculateDistance(lat1, long1, lat2, long2) { //comparer position de l utilisateur avec la position du restaurant pour savoir si on doit l afficher

@@ -7,23 +7,6 @@ class Restaurant {
         this.rating = data.ratings;
         this.ratingAverage = this.calculateRatingAverage(this.rating);
     }
-    render(elementPosition, map) {
-        $(`#${elementPosition}`).append(`
-        <div id="${this.name}" class="restaurant_div">
-        <h3 class="nom_restaurant">${this.name}</h3>
-        <img src="https://maps.googleapis.com/maps/api/streetview?size=400x400&location=${this.latitude},${this.longitude}&fov=80&heading=70&pitch=0 &key=AIzaSyBfhcy9vQ6MGH5rO_faSiF48S-jkGNZMGY" alt="image street" class="image_etoile">
-        <p>${this.address}</p>
-        <div class="nbr_etoiles">
-        <p>${this.ratingAverage}</p>
-        <img src="image/etoile.png" alt="image etoile" class="image_etoile">
-        </div>
-      
-       </div>
-        `);
-        $(`#${this.name}`).on('click', () => {
-            this.ratingsRender(map)
-        });
-    }
 
     calculateRatingAverage(rating) {
         let sum = 0;
@@ -36,12 +19,11 @@ class Restaurant {
     ratingsRender(map) {
         $(`.user_comment`).empty();
         map.map.setView([this.latitude, this.longitude], 16);
-        //     map.getNearestRestaurant(this.latitude, this.longitude);
         $(`.user_comment`).append(`
                     <h3 class="nom_restaurant">${this.name}</h3>
                     `);
         this.rating.forEach(element => {
-            $(`.user_comment`).append(`
+          $(`.user_comment`).append(`
                         <div class="avis">
                         <div class="nbr_etoiles">
                         <p class="stars_number">${element.stars}</p>
@@ -51,5 +33,5 @@ class Restaurant {
                         </div>
                         `);
         })
-    }
+    } 
 }
