@@ -49,8 +49,15 @@ class Map {
     let latitude;
     let longitude;
     let that = this;
+    $('body').append(`
+    <div id="user_position">
+        <h3>Entrez votre Code Postal</h3>
+        <form>
+          <input name="code postal" id="code" cols="20" rows="10"></input>
+          <button id="validate">Valider</button>
+        </form>
+      </div>`)
     $('#user_position').show();
-    console.log(this)
 
     function ajaxGet(url, callback) {
       let req = new XMLHttpRequest();
