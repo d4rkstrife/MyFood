@@ -12,6 +12,8 @@ class Map {
   init() {
     if (navigator.geolocation) { //le navigator prend en charger la localisation
       let watchId = navigator.geolocation.getCurrentPosition((position) => {
+        
+      $('#position').hide();
         this.userPositionAcquired(position.coords.latitude, position.coords.longitude);
       },
 
@@ -49,15 +51,14 @@ class Map {
     let latitude;
     let longitude;
     let that = this;
-    $('body').append(`
-    <div id="user_position">
+    $('#position').append(`
         <h3>Entrez votre Code Postal</h3>
         <form>
           <input name="code postal" id="code" cols="20" rows="10"></input>
           <button id="validate">Valider</button>
         </form>
       </div>`)
-    $('#user_position').show();
+    $('#position').show();
 
     function ajaxGet(url, callback) {
       let req = new XMLHttpRequest();
@@ -79,9 +80,9 @@ class Map {
     $('#validate').on('click', (e) => {
       e.preventDefault();
 
-      $('#user_position').hide();
       console.log($('#code').val());
       let codePostal = $('#code').val();
+      $('#position').hide();
       ajaxGet(`https://geo.api.gouv.fr/communes?codePostal=${codePostal}&fields=centre&format=json&geometry=centre`, function (reponse) {
         let ville = JSON.parse(reponse);
         latitude = ville[0].centre.coordinates[1];

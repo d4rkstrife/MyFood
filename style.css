@@ -44,7 +44,7 @@ h1 {
     width : 20px;
     height: 20px;
 }
-#user_position{
+#position{
     display : none;
     position : absolute;
     background-color: #EB984E;
