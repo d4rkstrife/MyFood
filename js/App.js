@@ -5,7 +5,7 @@ class App {
         this.restaurantCollection = [];
     }
     init() {
-        let filtre =  new Filtre("filter_button","minimum", "maximum");
+        let filtre = new Filtre("filter_button", "minimum", "maximum");
         this.restaurants.forEach(element => {
             this.restaurantCollection.push(new Restaurant(element));
         });

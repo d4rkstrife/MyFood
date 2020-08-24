@@ -23,7 +23,7 @@ class Restaurant {
                     <h3 class="nom_restaurant">${this.name}</h3>
                     `);
         this.rating.forEach(element => {
-          $(`.user_comment`).append(`
+            $(`.user_comment`).append(`
                         <div class="avis">
                         <div class="nbr_etoiles">
                         <p class="stars_number">${element.stars}</p>
@@ -33,5 +33,5 @@ class Restaurant {
                         </div>
                         `);
         })
-    } 
+    }
 }

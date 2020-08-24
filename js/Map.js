@@ -10,10 +10,11 @@ class Map {
   }
 
   init() {
+
     if (navigator.geolocation) { //le navigator prend en charger la localisation
       let watchId = navigator.geolocation.getCurrentPosition((position) => {
-        
-      $('#position').hide();
+
+        $('#position').hide();
         this.userPositionAcquired(position.coords.latitude, position.coords.longitude);
       },
 
@@ -90,7 +91,7 @@ class Map {
         console.log(latitude, longitude, that);
         that.userPositionAcquired(latitude, longitude);
       });
-      
+
 
 
     })
