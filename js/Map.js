@@ -46,7 +46,7 @@ class Map {
       "ratings": []
     }
     let newRestaurant = new Restaurant(data);
-    newRestaurant.ratingAverage = null;
+    newRestaurant.ratingAverage = 0;
     this.restaurant.push(newRestaurant);
     console.log(this.restaurant)
     this.map.removeLayer(this.groupMarker);
@@ -129,7 +129,7 @@ class Map {
     $('#restaurant_elt').empty();
     this.restaurantNear = [];
     this.restaurant.forEach(element => {
-      if ((element.ratingAverage >= this.filtre.min && element.ratingAverage <= this.filtre.max) || element.ratingAverage === null) {
+      if ((element.ratingAverage >= this.filtre.min && element.ratingAverage <= this.filtre.max) || element.ratingAverage === 0) {
         this.restaurantRender(element);
       }
     });
