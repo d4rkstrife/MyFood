@@ -13,17 +13,17 @@ class Map {
     let that = this;
     if (navigator.geolocation) { //le navigator prend en charger la localisation
       let watchId = navigator.geolocation.getCurrentPosition((position) => {
-        
-      $('#position').hide();
+
+        $('#position').hide();
         this.userPositionAcquired(position.coords.latitude, position.coords.longitude);
-        this.map.on('click', function(e){ 
-      var coord = e.latlng;
-      var lat = coord.lat;
-      var lng = coord.lng; 
-      console.log("You clicked the map at latitude: " + lat + " and longitude: " + lng); 
+        this.map.on('click', function (e) {
+          var coord = e.latlng;
+          var lat = coord.lat;
+          var lng = coord.lng;
+          console.log("You clicked the map at latitude: " + lat + " and longitude: " + lng);
           that.addRestaurant(lat, lng);
         });
-      
+
       },
 
         this.userPositionDenied()
@@ -32,10 +32,10 @@ class Map {
     } else { //le navigateur ne prend pas en charge la localisation.
       console.log("votre navigateur ne prend pas en charge la localisation")
     }
-    
+
   }
-  
-  addRestaurant(latitude, longitude){
+
+  addRestaurant(latitude, longitude) {
     let name = prompt("Entrez le nom du restaurant");
     let adress = prompt("Entrez l'adresse du restaurant");
     let data = {
@@ -45,8 +45,14 @@ class Map {
       "long": longitude,
       "ratings": []
     }
-    let newRestaurant = new Restaurant (data);
-    console.log(newRestaurant)
+    let newRestaurant = new Restaurant(data);
+    newRestaurant.ratingAverage = null;
+    this.restaurant.push(newRestaurant);
+    console.log(this.restaurant)
+    this.map.removeLayer(this.groupMarker);
+    this.groupMarker = L.layerGroup([]);
+    this.getNearestRestaurant();
+    this.map.addLayer(this.groupMarker);
   }
 
   userPositionAcquired(latitude, longitude) {
@@ -111,10 +117,9 @@ class Map {
         let ville = JSON.parse(reponse);
         latitude = ville[0].centre.coordinates[1];
         longitude = ville[0].centre.coordinates[0];
-        console.log(latitude, longitude, that);
         that.userPositionAcquired(latitude, longitude);
       });
-      
+
 
 
     })
@@ -124,7 +129,7 @@ class Map {
     $('#restaurant_elt').empty();
     this.restaurantNear = [];
     this.restaurant.forEach(element => {
-      if (element.ratingAverage >= this.filtre.min && element.ratingAverage <= this.filtre.max) {
+      if ((element.ratingAverage >= this.filtre.min && element.ratingAverage <= this.filtre.max) || element.ratingAverage === null) {
         this.restaurantRender(element);
       }
     });
