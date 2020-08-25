@@ -12,8 +12,8 @@ class Map {
   init() {
     if (navigator.geolocation) { //le navigator prend en charger la localisation
       let watchId = navigator.geolocation.getCurrentPosition((position) => {
-        
-      $('#position').hide();
+
+        $('#position').hide();
         this.userPositionAcquired(position.coords.latitude, position.coords.longitude);
       },
 
@@ -63,7 +63,7 @@ class Map {
     function ajaxGet(url, callback) {
       let req = new XMLHttpRequest();
       req.open("GET", url);
-      req.addEventListener("load", function () {
+      req.addEventListener("load", () => {
         if (req.status >= 200 && req.status < 400) {
           // Appelle la fonction callback en lui passant la réponse de la requête
           callback(req.responseText);
@@ -71,7 +71,7 @@ class Map {
           console.error(req.status + " " + req.statusText + " " + url);
         }
       });
-      req.addEventListener("error", function () {
+      req.addEventListener("error", () => {
         console.error("Erreur réseau avec l'URL " + url);
       });
       req.send(null);
@@ -83,16 +83,13 @@ class Map {
       console.log($('#code').val());
       let codePostal = $('#code').val();
       $('#position').hide();
-      ajaxGet(`https://geo.api.gouv.fr/communes?codePostal=${codePostal}&fields=centre&format=json&geometry=centre`, function (reponse) {
+      ajaxGet(`https://geo.api.gouv.fr/communes?codePostal=${codePostal}&fields=centre&format=json&geometry=centre`, (reponse) => {
         let ville = JSON.parse(reponse);
         latitude = ville[0].centre.coordinates[1];
         longitude = ville[0].centre.coordinates[0];
         console.log(latitude, longitude, that);
-        that.userPositionAcquired(latitude, longitude);
+        this.userPositionAcquired(latitude, longitude);
       });
-      
-
-
     })
   }
 
