@@ -41,16 +41,15 @@ class Map {
 
 
     $('#filter_button').on('click', () => {
-
       event.preventDefault();
-      this.filtre.init(this)
+      console.log($(`#minimum`).val(), $(`#maximum`).val())
+      if ($(`#minimum`).val() <= $(`#maximum`).val()) {
+        this.filtre.init(this)
+      }
     })
   }
 
   userPositionDenied() {
-    let latitude;
-    let longitude;
-    let that = this;
     $('#position').append(`
         <h3>Entrez votre Code Postal</h3>
         <form>
@@ -59,38 +58,22 @@ class Map {
         </form>
       </div>`)
     $('#position').show();
-
-    function ajaxGet(url, callback) {
-      let req = new XMLHttpRequest();
-      req.open("GET", url);
-      req.addEventListener("load", () => {
-        if (req.status >= 200 && req.status < 400) {
-          // Appelle la fonction callback en lui passant la réponse de la requête
-          callback(req.responseText);
-        } else {
-          console.error(req.status + " " + req.statusText + " " + url);
-        }
-      });
-      req.addEventListener("error", () => {
-        console.error("Erreur réseau avec l'URL " + url);
-      });
-      req.send(null);
-    }
-
     $('#validate').on('click', (e) => {
       e.preventDefault();
 
-      console.log($('#code').val());
       let codePostal = $('#code').val();
       $('#position').hide();
-      ajaxGet(`https://geo.api.gouv.fr/communes?codePostal=${codePostal}&fields=centre&format=json&geometry=centre`, (reponse) => {
-        let ville = JSON.parse(reponse);
-        latitude = ville[0].centre.coordinates[1];
-        longitude = ville[0].centre.coordinates[0];
-        console.log(latitude, longitude, that);
-        this.userPositionAcquired(latitude, longitude);
-      });
-    })
+      this.getPositionByPostal(codePostal)
+    });
+  }
+
+  async getPositionByPostal(postalCode) {
+    let reponse = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${postalCode}&fields=centre&format=json&geometry=centre`);
+    let data = await reponse.json()
+    let ville = data;
+    let latitude = ville[0].centre.coordinates[1];
+    let longitude = ville[0].centre.coordinates[0];
+    this.userPositionAcquired(latitude, longitude);
   }
 
   getNearestRestaurant() {
@@ -117,13 +100,14 @@ class Map {
 
     $(`#restaurant_elt`).append(`
             <div id="${element.name}" class="restaurant_div">
+            <div class="nom_etoiles">
             <h3 class="nom_restaurant">${element.name}</h3>
-            <p>${element.address}</p>
             <div class="nbr_etoiles">
             <p>${element.ratingAverage}</p>
             <img src="image/etoile.png" alt="image etoile" class="image_etoile">
             </div>
-          
+            </div>
+            <p>${element.address}</p>         
            </div>
             `);
     $(`#${element.name}`).on('click', () => {

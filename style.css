@@ -23,6 +23,8 @@ h1 {
     text-align: center;
     border : 2px solid #684205;
     width : 95%;
+    height : 128px;
+    cursor : pointer;
 }
 .user_comment {
     display : flex;
@@ -34,6 +36,11 @@ h1 {
     border : 2px solid black;
     width : 25%;
     text-align: center;
+}
+.nom_etoiles {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
 .nbr_etoiles {
     display: flex;
