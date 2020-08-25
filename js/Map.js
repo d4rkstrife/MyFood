@@ -10,12 +10,20 @@ class Map {
   }
 
   init() {
-
+    let that = this;
     if (navigator.geolocation) { //le navigator prend en charger la localisation
       let watchId = navigator.geolocation.getCurrentPosition((position) => {
-
-        $('#position').hide();
+        
+      $('#position').hide();
         this.userPositionAcquired(position.coords.latitude, position.coords.longitude);
+        this.map.on('click', function(e){ 
+      var coord = e.latlng;
+      var lat = coord.lat;
+      var lng = coord.lng; 
+      console.log("You clicked the map at latitude: " + lat + " and longitude: " + lng); 
+          that.addRestaurant(lat, lng);
+        });
+      
       },
 
         this.userPositionDenied()
@@ -24,6 +32,21 @@ class Map {
     } else { //le navigateur ne prend pas en charge la localisation.
       console.log("votre navigateur ne prend pas en charge la localisation")
     }
+    
+  }
+  
+  addRestaurant(latitude, longitude){
+    let name = prompt("Entrez le nom du restaurant");
+    let adress = prompt("Entrez l'adresse du restaurant");
+    let data = {
+      "restaurantName": name,
+      "address": adress,
+      "lat": latitude,
+      "long": longitude,
+      "ratings": []
+    }
+    let newRestaurant = new Restaurant (data);
+    console.log(newRestaurant)
   }
 
   userPositionAcquired(latitude, longitude) {
@@ -91,7 +114,7 @@ class Map {
         console.log(latitude, longitude, that);
         that.userPositionAcquired(latitude, longitude);
       });
-
+      
 
 
     })
