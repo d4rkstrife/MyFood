@@ -10,20 +10,19 @@ h1 {
     text-align: center;
 }
 #restaurant_elt {
-    background-color:#EB984E;
-    color : white;
-    border: 8px solid #D68910;
+    background-color:#d8d8d7;
+    color : black;
+    border: 1px solid black;
     display: flex;
     flex-direction: column;
-    height: 682px;
-    width : 20%;
+    height: 800px;
+    width : 25%;
     overflow-x: auto; 
 }
 .restaurant_div {
     text-align: center;
-    border : 2px solid #684205;
+    border : 2px solid black;
     width : 95%;
-    height : 128px;
     cursor : pointer;
 }
 .user_comment {
@@ -31,17 +30,20 @@ h1 {
     flex-direction: column;
     align-items: center;
 }
+.comment_elt {
+    margin-top: 0;
+}
+
 
 .avis {
-    border : 2px solid black;
-    width : 25%;
     text-align: center;
 }
 .nom_etoiles {
     display: flex;
     align-items: center;
-    justify-content: space-around;
+   justify-content: space-around;
 }
+
 .nbr_etoiles {
     display: flex;
     align-items: center;
@@ -59,4 +61,7 @@ h1 {
     height : 140px;
     top : 40%;
     left: 30%;
+}
+.leaflet-popup-content-wrapper {
+    border-radius : 0;
 }

@@ -88,10 +88,10 @@ class Map {
 
   restaurantRender(element) {
     let circle = L.circle([element.latitude, element.longitude], {
-      color: 'red',
-      fillColor: '#f03',
-      fillOpacity: 0.5,
-      radius: 20
+      color: '#9A0DD8',
+      fillColor: '#9A0DD8',
+      fillOpacity: 1,
+      radius: 10
     }).bindPopup(`${element.name}, ${element.address}`)
       .on('click', () => {
         element.ratingsRender(this);
@@ -107,7 +107,8 @@ class Map {
             <img src="image/etoile.png" alt="image etoile" class="image_etoile">
             </div>
             </div>
-            <p>${element.address}</p>         
+            <p>${element.address}</p> 
+            <div class="liste_avis"></div>        
            </div>
             `);
     $(`#${element.name}`).on('click', () => {

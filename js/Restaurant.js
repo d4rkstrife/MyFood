@@ -21,13 +21,9 @@ class Restaurant {
     }
 
     ratingsRender(map) {
-        $(`.user_comment`).empty();
         map.map.setView([this.latitude, this.longitude], 16);
-        $(`.user_comment`).append(`
-                    <h3 class="nom_restaurant">${this.name}</h3>
-                    `);
         this.rating.forEach(element => {
-            $(`.user_comment`).append(`
+            $(`#${this.name} .liste_avis`).append(`
                         <div class="avis">
                         <div class="nbr_etoiles">
                         <p class="stars_number">${element.stars}</p>
@@ -36,6 +32,10 @@ class Restaurant {
                         <p class="comment_elt">${element.comment}</p>
                         </div>
                         `);
+            $(`#${this.name}`).on('click', () => {
+                $(`#${this.name} .liste_avis`).empty();
+            });
         })
+
     }
 }
