@@ -5,6 +5,7 @@ class Filtre {
     this.maxElt = maxElt;
     this.min = 1;
     this.max = 5;
+    this.state = "off";
   }
   init(map) {
     this.min = $(`#${this.minElt}`).val();

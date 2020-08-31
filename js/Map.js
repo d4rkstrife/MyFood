@@ -5,7 +5,6 @@ class Map {
     this.map;
     this.markers = [];
     this.filtre = filtre;
-    //  this.groupLayer = L.markerClusterGroup([]);
     this.groupMarker = L.layerGroup([]);
   }
 
@@ -20,7 +19,6 @@ class Map {
           var coord = e.latlng;
           var lat = coord.lat;
           var lng = coord.lng;
-          console.log("You clicked the map at latitude: " + lat + " and longitude: " + lng);
           that.addRestaurant(lat, lng);
         });
 
@@ -35,27 +33,63 @@ class Map {
 
   }
 
-  addRestaurant(latitude, longitude) {
-    let name = prompt("Entrez le nom du restaurant");
-    let adress = prompt("Entrez l'adresse du restaurant");
-    let data = {
-      "restaurantName": name,
-      "address": adress,
-      "lat": latitude,
-      "long": longitude,
-      "ratings": []
-    }
-    let newRestaurant = new Restaurant(data);
-    newRestaurant.ratingAverage = 0;
-    this.restaurant.push(newRestaurant);
-    console.log(this.restaurant)
-    this.map.removeLayer(this.groupMarker);
-    this.groupMarker = L.layerGroup([]);
-    this.getNearestRestaurant();
-    this.map.addLayer(this.groupMarker);
+  hideRestaurantRatings() { //cache tous les avis sur les restaurants.
+    this.restaurant.forEach(element => {
+      if (element.isRatingsShow === true) {
+        element.isRatingsShow = false;
+      }
+    })
   }
 
-  userPositionAcquired(latitude, longitude) {
+  addRestaurant(latitude, longitude) { //permet de rajouter un restaurantlors du clic sur la carte
+    $(`#user_comment`).show();
+    $(`#user_comment`).append(`
+    <h3>Rajouter un restaurant</h3>
+    <form>
+      <label for="nom_restaurant">Nom du restaurant (sans espace):</label><br>
+      <input type="text" id="nom_restaurant" name="nom_restaurant"><br>
+      <label for="adresse_restaurant">Adresse:</label><br>
+      <input type="text" id="adresse_restaurant" name="adresse_restaurant"><br>
+      <button id="add_restaurant">Valider</button>
+      <button id="cancel_newrestaurant">Annuler</button>
+    </form>
+    `)
+    $('#cancel_newrestaurant').on('click', () => {
+      event.preventDefault();
+      $(`#user_comment`).empty();
+      $(`#user_comment`).hide();
+    })
+    $('#add_restaurant').on('click', () => {
+      event.preventDefault();
+      let name = $('#nom_restaurant').val();
+      let adress = $('#adresse_restaurant').val();
+      if (name && adress) {
+        let data = {
+          "restaurantName": name,
+          "address": adress,
+          "lat": latitude,
+          "long": longitude,
+          "ratings": []
+        }
+        let newRestaurant = new Restaurant(data);//nouvel objet restaurant créé
+        newRestaurant.ratingAverage = 0;
+        this.restaurant.push(newRestaurant); //on le rajoute à la collection de restaurants
+        console.log(this.restaurant)
+        this.map.removeLayer(this.groupMarker); // on supprime tous les marqueurs
+        this.groupMarker = L.layerGroup([]);
+        this.getNearestRestaurant();
+        this.map.addLayer(this.groupMarker); //on remet tous les marqueurs dont le nouveau restaurant.
+        $(`#user_comment`).empty();
+        $(`#user_comment`).hide();
+      } else {
+        console.log("erreur");
+      }
+    })
+
+
+  }
+
+  userPositionAcquired(latitude, longitude) { //lorsque l on a accès à la position de l utilisateur
     this.map = L.map(`${this.emplacement}`).setView([latitude, longitude], 16);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -71,16 +105,26 @@ class Map {
 
 
     $('#filter_button').on('click', () => {
-
       event.preventDefault();
-      this.filtre.init(this)
+      this.filtre.state = "on";
+      if ($(`#minimum`).val() >= $(`#maximum`).val()) {
+        const min = $(`#minimum`).val();
+        $(`#minimum`).val($(`#maximum`).val());
+        $(`#maximum`).val(min);
+      }
+      this.filtre.init(this);
+    });
+
+    $('#reinit_button').on('click', () => {
+      event.preventDefault();
+      this.filtre.state = "off";
+      $(`#minimum`).val(1)
+      $(`#maximum`).val(5);
+      this.filtre.init(this);
     })
   }
 
-  userPositionDenied() {
-    let latitude;
-    let longitude;
-    let that = this;
+  userPositionDenied() { //lorsque la position de l utilisateur n'est pas accessible.
     $('#position').append(`
         <h3>Entrez votre Code Postal</h3>
         <form>
@@ -89,77 +133,70 @@ class Map {
         </form>
       </div>`)
     $('#position').show();
-
-    function ajaxGet(url, callback) {
-      let req = new XMLHttpRequest();
-      req.open("GET", url);
-      req.addEventListener("load", function () {
-        if (req.status >= 200 && req.status < 400) {
-          // Appelle la fonction callback en lui passant la réponse de la requête
-          callback(req.responseText);
-        } else {
-          console.error(req.status + " " + req.statusText + " " + url);
-        }
-      });
-      req.addEventListener("error", function () {
-        console.error("Erreur réseau avec l'URL " + url);
-      });
-      req.send(null);
-    }
-
     $('#validate').on('click', (e) => {
       e.preventDefault();
 
-      console.log($('#code').val());
       let codePostal = $('#code').val();
       $('#position').hide();
-      ajaxGet(`https://geo.api.gouv.fr/communes?codePostal=${codePostal}&fields=centre&format=json&geometry=centre`, function (reponse) {
-        let ville = JSON.parse(reponse);
-        latitude = ville[0].centre.coordinates[1];
-        longitude = ville[0].centre.coordinates[0];
-        that.userPositionAcquired(latitude, longitude);
-      });
+      this.getPositionByPostal(codePostal)
+    });
+  }
 
-
-
-    })
+  async getPositionByPostal(postalCode) {  //on interroge l api geo gouv afin d avoir le centre de la ville dont on a rentré le code postal.
+    let reponse = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${postalCode}&fields=centre&format=json&geometry=centre`);
+    let data = await reponse.json();
+    let ville = data;
+    let latitude = ville[0].centre.coordinates[1];
+    let longitude = ville[0].centre.coordinates[0];
+    this.userPositionAcquired(latitude, longitude);
   }
 
   getNearestRestaurant() {
     $('#restaurant_elt').empty();
     this.restaurantNear = [];
     this.restaurant.forEach(element => {
-      if ((element.ratingAverage >= this.filtre.min && element.ratingAverage <= this.filtre.max) || element.ratingAverage === 0) {
+      if (this.filtre.state === "off") {
+        this.restaurantRender(element);
+      } else if ((this.filtre.state === "on") && (element.ratingAverage >= this.filtre.min && element.ratingAverage <= this.filtre.max)) {
         this.restaurantRender(element);
       }
-    });
+    })
   }
 
   restaurantRender(element) {
     let circle = L.circle([element.latitude, element.longitude], {
-      color: 'red',
-      fillColor: '#f03',
-      fillOpacity: 0.5,
-      radius: 20
+      color: '#9A0DD8',
+      fillColor: '#9A0DD8',
+      fillOpacity: 1,
+      radius: 15
     }).bindPopup(`${element.name}, ${element.address}`)
       .on('click', () => {
+        if (!element.isRatingsShow) {
+          this.hideRestaurantRatings();
+        }
         element.ratingsRender(this);
       });
     this.groupMarker.addLayer(circle);
 
     $(`#restaurant_elt`).append(`
-            <div id="${element.name}" class="restaurant_div">
-            <h3 class="nom_restaurant">${element.name}</h3>
-            <p>${element.address}</p>
-            <div class="nbr_etoiles">
-            <p>${element.ratingAverage}</p>
-            <img src="image/etoile.png" alt="image etoile" class="image_etoile">
-            </div>
-          
-           </div>
-            `);
+    <div id="${element.name}" class="restaurant_div">
+    <div class="nom_etoiles">
+    <h3 class="nom_restaurant">${element.name}</h3>
+    <div class="nbr_etoiles">
+    <p>${element.ratingAverage}</p>
+    <img src="image/etoile.png" alt="image etoile" class="image_etoile">
+    </div>
+    </div>
+    <p>${element.address}</p> 
+    <div class="avis_utilisateurs">
+    </div        
+   </div>
+    `);
     $(`#${element.name}`).on('click', () => {
-      element.ratingsRender(this)
+      if (!element.isRatingsShow) {
+        this.hideRestaurantRatings();
+      }
+      element.ratingsRender(this);
     });
   }
 
