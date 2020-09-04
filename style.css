@@ -16,7 +16,7 @@ main {
       border: 1px solid black;
       display: flex;
       flex-direction: column;
-      height: 800px;
+      height: 750px;
       width : 25%;
       overflow-x: auto; 
   }
@@ -35,7 +35,7 @@ main {
       top : 35%;
       left:35%;
       width : 320px;
-      height : 180px;
+      height : 400px;
       background-color: #d8d8d7;
   }
   .comment_elt {
@@ -70,6 +70,9 @@ main {
       height : 140px;
       top : 40%;
       left: 30%;
+  }
+  textarea{
+      width : 85%;
   }
   .leaflet-popup-content-wrapper {
       border-radius : 0;

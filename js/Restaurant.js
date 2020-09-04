@@ -17,30 +17,15 @@ class Restaurant {
             for (let i = 0; i < rating.length; i++) {
                 sum += rating[i].stars;
             }
-            return Math.floor(sum / rating.length)
+            return Math.round(sum / rating.length)
         }
     }
 
-    ratingsRender(map) {
+    ratingsRender(map) { //rendu du formulaire d'ajout d'avis et de tous les avis utilisateurs.
         if (!this.isRatingsShow) {
             console.log("open");
             map.map.setView([this.latitude, this.longitude], 16);
-            $(".avis_utilisateurs").html(`
-                <div class="liste_avis"></div>
-            `);
-            this.rating.forEach(element => {
-                $(`#${this.name} .liste_avis`).append(`
-                            <div class="avis">
-                            <div class="nbr_etoiles">
-                            <p class="stars_number">${element.stars}</p>
-                            <img src="image/etoile.png" alt="image etoile" class="image_etoile">
-                            </div>
-                            <p class="comment_elt">${element.comment}</p>
-                            </div>
-                            `);
-
-            });
-            $(`#${this.name} .avis_utilisateurs`).append(`
+            $(`#${this.name} .avis_utilisateurs`).html(`
                             <form>
                             <label for="note">Noter le restaurant :</label>
                             <select name="note" id="note">
@@ -50,43 +35,65 @@ class Restaurant {
                             <option value="4">4</option>
                             <option value="5">5</option>
                             </select>
-                            <input type="text" id="avis" name="avis">
+                            <textarea id="avis" name="avis"></textarea>
                             <button id="valider_avis">Valider</button>
                             </form>
+                            <div class="liste_avis">
+                            <h4>Avis Clients</h4>
+                            </div>
             `)
+            this.rating.forEach(element => {
+                this.ratingRender(element);
+
+            });
             this.isRatingsShow = true;
         } else {
             this.closeRating();
         }
+
+        //event du click sur le formulaire
         $(`#${this.name} .avis_utilisateurs form`).on('click', () => {
             event.stopPropagation();
         })
-        $('#valider_avis').on('click', () => {
+        $('#valider_avis').on('click', () => {//event du clique sur le bouton valider du formulaire d ajout d avis
             event.preventDefault();
             let stars = parseInt($('#note').val());
-            let comment = $('#avis').val();
-            this.addRating(stars, comment);
-            $(`#${this.name} .avis_utilisateurs`).empty();
-            $(`#${this.name} .nom_etoiles .nbr_etoiles p`).text(`${this.ratingAverage}`);
+            let comment = $('#avis').val().replace(/<(?:.|\s)*?>/g, "");
 
+            if ((stars > 0 && stars <= 5) && comment) {
+                $('#avis').val("");
+                this.addRating(stars, comment);
+                $(`#${this.name} .nom_etoiles .nbr_etoiles p`).text(`${this.ratingAverage}`);
+            }
 
-
-        })
-
+        });
     }
 
-    addRating(stars, comment) {
+    ratingRender(rating) {//rendu d'un seul avis
+        $(`#${this.name} .liste_avis`).append(`
+        <div class="avis">
+        <div class="nbr_etoiles">
+        <p class="stars_number">${rating.stars}</p>
+        <img src="image/etoile.png" alt="image etoile" class="image_etoile">
+        </div>
+        <p class="comment_elt">${rating.comment}</p>
+        </div>
+        `);
+    }
+
+    addRating(stars, comment) { //on rajoute l'avis à tous les autres avis deja presents.
         let newRating = {
             "stars": stars,
             "comment": comment
         };
         this.rating.push(newRating);
+        this.ratingRender(newRating);
         this.ratingAverage = this.calculateRatingAverage(this.rating);
 
     }
 
     closeRating() {
-        $(`#${this.name} .avis_utilisateurs`).empty();
+        $(`#${this.name} .avis_utilisateurs`).html("");
         console.log("close");
         this.isRatingsShow = false;
     }
