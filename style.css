@@ -14,6 +14,7 @@ body{
 
 main {
     display : flex;
+    justify-content: space-between;
 }
   
 #mapid {
@@ -121,4 +122,20 @@ button{
   }
 .leaflet-popup-content-wrapper {
       border-radius : 0;
+  }
+  @media screen and (max-width: 1000px){
+      main {
+          flex-direction: column;
+      }
+      #mapid {
+          width: 100%;
+      }
+      #restaurant_elt {
+          width : 100%;
+      }
+      #show_add_elt {
+          position : relative;
+          top : 0;
+      }
+
   }
