@@ -15,26 +15,16 @@ class Map {
 
         $('#position').hide();
         this.userPositionAcquired(position.coords.latitude, position.coords.longitude);
-        this.map.on('click', function (e) {
-          var coord = e.latlng;
-          var lat = coord.lat;
-          var lng = coord.lng;
-          $(`#user_comment`).empty();
-          that.addRestaurant(lat, lng);
-        });
-
       },
-
         this.userPositionDenied()
       );
-
     } else { //le navigateur ne prend pas en charge la localisation.
       console.log("votre navigateur ne prend pas en charge la localisation")
     }
     $('#show_newrest_elt').on('click', () => {
       event.preventDefault;
       $(`#user_comment`).empty();
-      this.addRestaurantByBouton();
+      this.addRestaurant();
     })
 
   }
@@ -47,7 +37,7 @@ class Map {
     })
   }
 
-  showUserComment() {
+  showUserComment() { //fait apparaitre la div permettant d ajouter un restaurant
     $(`#user_comment`).show();
     $(`#user_comment`).append(`
     <h3>Rajouter un restaurant</h3>
@@ -70,7 +60,11 @@ class Map {
     `)
   }
 
-  addRestaurantByBouton() { //permet de rajouter un restaurant lors du clic sur le bouton
+  addRestaurant(latitude, longitude) { //permet de rajouter un restaurant lors du clic sur la carte ou sur le bouton
+    if (latitude && longitude) {
+      this.getPostalByPosition(latitude, longitude);
+    };
+
     this.showUserComment();
 
     $('#cancel_newrestaurant').on('click', () => {
@@ -88,73 +82,16 @@ class Map {
       let adress = `${numero}, ${street}, ${postalCode} ${city}`
       if (name && (numero && street && postalCode && city)) {
         this.getPositionByAdress(adress, name);
-        $(`#user_comment`).empty();
-        $(`#user_comment`).hide();
       } else if (!(numero && street && postalCode && city)) {
         console.log("erreur adresse");
       } else {
         console.log("erreur nom")
       }
-
-
-
-
     })
-  }
-
-  console(data) {
-    console.log(data)
-  }
-
-  addRestaurant(latitude, longitude) { //permet de rajouter un restaurant lors du clic sur la carte
-    this.getPostalByPosition(latitude, longitude);
-    this.showUserComment();
-
-    $('#cancel_newrestaurant').on('click', () => {
-      event.preventDefault();
-      $(`#user_comment`).empty();
-      $(`#user_comment`).hide();
-    })
-    $('#add_restaurant').on('click', () => {
-      event.preventDefault();
-      let name = $('#nom_restaurant').val();
-      let numero = $('#numero_adresse_restaurant').val();
-      let street = $('#rue_adresse_restaurant').val();
-      let postalCode = $('#code_adresse_restaurant').val();
-      let city = $('#ville_adresse_restaurant').val();
-      let adress = `${numero}, ${street}, ${postalCode} ${city}`
-      if (name && adress) {
-        let data = {
-          "restaurantName": name,
-          "address": adress,
-          "lat": latitude,
-          "long": longitude,
-          "ratings": []
-        }
-        let newRestaurant = new Restaurant(data);//nouvel objet restaurant créé
-        newRestaurant.ratingAverage = 0;
-        this.restaurant.push(newRestaurant); //on le rajoute à la collection de restaurants
-        console.log(this.restaurant)
-        this.map.removeLayer(this.groupMarker); // on supprime tous les marqueurs
-        this.groupMarker = L.layerGroup([]);
-        this.getNearestRestaurant();
-        this.map.addLayer(this.groupMarker); //on remet tous les marqueurs dont le nouveau restaurant.
-      } else if (!adress) {
-        console.log("erreur adresse");
-      } else {
-        console.log("erreur nom")
-      }
-
-
-      $(`#user_comment`).empty();
-      $(`#user_comment`).hide();
-
-    })
-
-
   }
 
   userPositionAcquired(latitude, longitude) { //lorsque l on a accès à la position de l utilisateur
+    let that = this;
     this.map = L.map(`${this.emplacement}`).setView([latitude, longitude], 16);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -168,8 +105,16 @@ class Map {
     this.getNearestRestaurant(latitude, longitude);
     this.map.addLayer(this.groupMarker);
 
+    this.map.on('click', function (e) { // event du clic sur la map qui permet l ajout de restaurant
+      var coord = e.latlng;
+      var lat = coord.lat;
+      var lng = coord.lng;
+      $(`#user_comment`).empty();
+      that.addRestaurant(lat, lng);
+    });
 
-    $('#filter_button').on('click', () => {
+
+    $('#filter_button').on('click', () => { //event du bouton valider du filtre
       event.preventDefault();
       this.filtre.state = "on";
       if ($(`#minimum`).val() >= $(`#maximum`).val()) {
@@ -180,7 +125,7 @@ class Map {
       this.filtre.init(this);
     });
 
-    $('#reinit_button').on('click', () => {
+    $('#reinit_button').on('click', () => { //event du bouton annuler du filtre
       event.preventDefault();
       this.filtre.state = "off";
       $(`#minimum`).val(1)
@@ -206,23 +151,22 @@ class Map {
       this.getPositionByPostal(codePostal)
     });
   }
-  async getPostalByPosition(latitude, longitude) {
+
+  async getPostalByPosition(latitude, longitude) { // permet de remplir les cases adresse du formulaire ajout de restaurant lors du clic sur la carte
     let response = await fetch(`http://api.positionstack.com/v1/reverse?access_key=ad81b9c232a0cab345eef95c3036636d&query=${latitude},${longitude}`);
     let data = await response.json();
-    console.log(data.data[0])
     $('#numero_adresse_restaurant').val(data.data[0].number);
     $('#rue_adresse_restaurant').val(data.data[0].street);
     $('#code_adresse_restaurant').val(data.data[0].postal_code);
     $('#ville_adresse_restaurant').val(data.data[0].administrative_area);
   }
 
-  async getPositionByAdress(adresse, name) {
+  async getPositionByAdress(adresse, name) { //ajout d'un restaurant a la liste de restaurant suite a son ajout dans le formulaire
     let response = await fetch(`http://api.positionstack.com/v1/forward?access_key=ad81b9c232a0cab345eef95c3036636d&query=${adresse}`);
     let placeData = await response.json();
     let place = placeData;
     let latitude = place.data[0].latitude;
     let longitude = place.data[0].longitude;
-    console.log(latitude, longitude)
 
     let data = {
       "restaurantName": name,
@@ -231,14 +175,19 @@ class Map {
       "long": longitude,
       "ratings": []
     }
+    this.refreshRestaurantListeNewRest(data)
+  }
+
+  refreshRestaurantListeNewRest(data) {//rafraichir liste des restaurant après
     let newRestaurant = new Restaurant(data);//nouvel objet restaurant créé
     newRestaurant.ratingAverage = 0;
     this.restaurant.push(newRestaurant); //on le rajoute à la collection de restaurants
-    console.log(this.restaurant)
     this.map.removeLayer(this.groupMarker); // on supprime tous les marqueurs
     this.groupMarker = L.layerGroup([]);
     this.getNearestRestaurant();
     this.map.addLayer(this.groupMarker); //on remet tous les marqueurs dont le nouveau restaurant.*/
+    $(`#user_comment`).empty();
+    $(`#user_comment`).hide();
   }
 
   async getPositionByPostal(postalCode) {  //on interroge l api geo gouv afin d avoir le centre de la ville dont on a rentré le code postal.

@@ -35,7 +35,7 @@ class Restaurant {
                             <option value="4">4</option>
                             <option value="5">5</option>
                             </select>
-                            <textarea id="avis" name="avis"></textarea>
+                            <textarea id="avis" name="avis" required></textarea>
                             <button id="valider_avis">Valider</button>
                             </form>
                             <div class="liste_avis">
@@ -71,6 +71,7 @@ class Restaurant {
 
     ratingRender(rating) {//rendu d'un seul avis
         $(`#${this.name} .liste_avis`).append(`
+        <p class="ligne"></p>
         <div class="avis">
         <div class="nbr_etoiles">
         <p class="stars_number">${rating.stars}</p>
