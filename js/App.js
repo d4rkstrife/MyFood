@@ -10,8 +10,6 @@ class App {
             this.restaurantCollection.push(new Restaurant(element));
         });
         let map = new Map(this.mapEmplacement, this.restaurantCollection, filtre);
-
-
         map.init();
     }
 }

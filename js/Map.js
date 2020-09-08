@@ -42,7 +42,7 @@ class Map {
     $(`#user_comment`).append(`
     <h3>Rajouter un restaurant</h3>
     <form>
-      <label for="nom_restaurant">Nom du restaurant (sans espace):</label><br>
+      <label for="nom_restaurant">Nom du restaurant:</label><br>
       <input type="text" id="nom_restaurant" name="nom_restaurant"><br>
       <h4>Entrez l'adresse</h4>
       <label for="numero_adresse_restaurant">Numero:</label><br>
@@ -50,7 +50,7 @@ class Map {
       <label for="rue_adresse_restaurant">Rue:</label><br>
       <input type="text" id="rue_adresse_restaurant" name="rue_adresse_restaurant"><br>
       <label for="code_adresse_restaurant">Code Postal:</label><br>
-      <input type="text" id="code_adresse_restaurant" name="code_adresse_restaurant"><br>
+      <input type="text" id="code_adresse_restaurant" pattern="[0-9]{5}" name="code_adresse_restaurant"><br>
       <label for="ville_adresse_restaurant">Ville:</label><br>
       <input type="text" id="ville_adresse_restaurant" name="ville_adresse_restaurant"><br>
 
@@ -152,6 +152,16 @@ class Map {
     });
   }
 
+  async getPositionByPostal(postalCode) {  //on interroge l api geo gouv afin d avoir le centre de la ville dont on a rentré le code postal.
+    let reponse = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${postalCode}&fields=centre&format=json&geometry=centre`);
+    let data = await reponse.json();
+    let ville = data;
+    console.log(reponse)
+    let latitude = ville[0].centre.coordinates[1];
+    let longitude = ville[0].centre.coordinates[0];
+    this.userPositionAcquired(latitude, longitude);
+  }
+
   async getPostalByPosition(latitude, longitude) { // permet de remplir les cases adresse du formulaire ajout de restaurant lors du clic sur la carte
     let response = await fetch(`http://api.positionstack.com/v1/reverse?access_key=ad81b9c232a0cab345eef95c3036636d&query=${latitude},${longitude}`);
     let data = await response.json();
@@ -167,6 +177,7 @@ class Map {
     let place = placeData;
     let latitude = place.data[0].latitude;
     let longitude = place.data[0].longitude;
+    name = name.replace(/ /g, "");
 
     let data = {
       "restaurantName": name,
@@ -188,15 +199,6 @@ class Map {
     this.map.addLayer(this.groupMarker); //on remet tous les marqueurs dont le nouveau restaurant.*/
     $(`#user_comment`).empty();
     $(`#user_comment`).hide();
-  }
-
-  async getPositionByPostal(postalCode) {  //on interroge l api geo gouv afin d avoir le centre de la ville dont on a rentré le code postal.
-    let reponse = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${postalCode}&fields=centre&format=json&geometry=centre`);
-    let data = await reponse.json();
-    let ville = data;
-    let latitude = ville[0].centre.coordinates[1];
-    let longitude = ville[0].centre.coordinates[0];
-    this.userPositionAcquired(latitude, longitude);
   }
 
   getNearestRestaurant() {
