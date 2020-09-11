@@ -1,6 +1,7 @@
 class Restaurant {
     constructor(data) {
-        this.name = data.restaurantName;
+        this.name = data.restaurantName
+        this.divName = this.name.replace(/ /g, "") + Math.floor(Math.random() * 100);
         this.address = data.address;
         this.latitude = data.lat;
         this.longitude = data.long;
@@ -25,7 +26,7 @@ class Restaurant {
         if (!this.isRatingsShow) {
             console.log("open");
             map.map.setView([this.latitude, this.longitude], 16);
-            $(`#${this.name} .avis_utilisateurs`).html(`
+            $(`#${this.divName} .avis_utilisateurs`).html(`
                             <form>
                             <label for="note">Noter le restaurant :</label>
                             <select name="note" id="note">
@@ -52,7 +53,7 @@ class Restaurant {
         }
 
         //event du click sur le formulaire
-        $(`#${this.name} .avis_utilisateurs form`).on('click', () => {
+        $(`#${this.divName} .avis_utilisateurs form`).on('click', () => {
             event.stopPropagation();
         })
         $('#valider_avis').on('click', () => {//event du clique sur le bouton valider du formulaire d ajout d avis
@@ -63,14 +64,14 @@ class Restaurant {
             if ((stars > 0 && stars <= 5) && comment) {
                 $('#avis').val("");
                 this.addRating(stars, comment);
-                $(`#${this.name} .nom_etoiles .nbr_etoiles p`).text(`${this.ratingAverage}`);
+                $(`#${this.divName} .nom_etoiles .nbr_etoiles p`).text(`${this.ratingAverage}`);
             }
 
         });
     }
 
     ratingRender(rating) {//rendu d'un seul avis
-        $(`#${this.name} .liste_avis`).append(`
+        $(`#${this.divName} .liste_avis`).append(`
         <p class="ligne"></p>
         <div class="avis">
         <div class="nbr_etoiles">
@@ -94,7 +95,7 @@ class Restaurant {
     }
 
     closeRating() {
-        $(`#${this.name} .avis_utilisateurs`).html("");
+        $(`#${this.divName} .avis_utilisateurs`).html("");
         console.log("close");
         this.isRatingsShow = false;
     }

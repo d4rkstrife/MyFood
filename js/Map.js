@@ -42,8 +42,11 @@ class Map {
     $(`#user_comment`).append(`
     <h3>Rajouter un restaurant</h3>
     <form>
+    <div id="nom_form">
       <label for="nom_restaurant">Nom du restaurant:</label><br>
       <input type="text" id="nom_restaurant" name="nom_restaurant"><br>
+    </div>
+    <div id="adress_form">
       <h4>Entrez l'adresse</h4>
       <label for="numero_adresse_restaurant">Numero:</label><br>
       <input type="text" id="numero_adresse_restaurant" name="numero_adresse_restaurant"><br>
@@ -53,9 +56,10 @@ class Map {
       <input type="text" id="code_adresse_restaurant" pattern="[0-9]{5}" name="code_adresse_restaurant"><br>
       <label for="ville_adresse_restaurant">Ville:</label><br>
       <input type="text" id="ville_adresse_restaurant" name="ville_adresse_restaurant"><br>
-
+    </div>
       <button id="add_restaurant">Valider</button>
       <button id="cancel_newrestaurant">Annuler</button>
+      <div id="erreur"></div>
     </form>
     `)
   }
@@ -84,8 +88,13 @@ class Map {
         this.getPositionByAdress(adress, name);
       } else if (!(numero && street && postalCode && city)) {
         console.log("erreur adresse");
+        $('#adress_form input').css("border", "2px solid red");
+        $(`#user_comment form #erreur`).html("<p style='color : red'>Veuillez remplir tous les champs</p>");
       } else {
-        console.log("erreur nom")
+        console.log("erreur nom");
+        $('#nom_form input').css("border", "2px solid red");
+        $(`#user_comment form #erreur`).html("<p style='color : red'>Veuillez remplir tous les champs</p>");
+
       }
     })
   }
@@ -146,7 +155,7 @@ class Map {
     $('#validate').on('click', (e) => {
       e.preventDefault();
 
-      let codePostal = $('#code').val();
+      let codePostal = $('#code').val().replace(/<(?:.|\s)*?>/g, "");
       $('#position').hide();
       this.getPositionByPostal(codePostal)
     });
@@ -156,7 +165,6 @@ class Map {
     let reponse = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${postalCode}&fields=centre&format=json&geometry=centre`);
     let data = await reponse.json();
     let ville = data;
-    console.log(reponse)
     let latitude = ville[0].centre.coordinates[1];
     let longitude = ville[0].centre.coordinates[0];
     this.userPositionAcquired(latitude, longitude);
@@ -177,11 +185,10 @@ class Map {
     let place = placeData;
     let latitude = place.data[0].latitude;
     let longitude = place.data[0].longitude;
-    name = name.replace(/ /g, "");
 
     let data = {
-      "restaurantName": name,
-      "address": adresse,
+      "restaurantName": name.replace(/<(?:.|\s)*?>/g, ""),
+      "address": adresse.replace(/<(?:.|\s)*?>/g, ""),
       "lat": latitude,
       "long": longitude,
       "ratings": []
@@ -229,7 +236,7 @@ class Map {
     this.groupMarker.addLayer(circle);
 
     $(`#restaurant_elt`).append(`
-    <div id="${element.name}" class="restaurant_div">
+    <div id="${element.divName}" class="restaurant_div">
     <div class="nom_etoiles">
     <h3 class="nom_restaurant">${element.name}</h3>
     <div class="nbr_etoiles">
@@ -242,7 +249,7 @@ class Map {
     </div        
    </div>
     `);
-    $(`#${element.name}`).on('click', () => {
+    $(`#${element.divName}`).on('click', () => {
       if (!element.isRatingsShow) {
         this.hideRestaurantRatings();
       }

@@ -48,7 +48,7 @@ let restaurantListe = [
         ]
     },
     {
-        "restaurantName": "McRonald",
+        "restaurantName": "Mc Ronald",
         "address": "146, avenue Charles de Gaulle, 69160 Tassin",
         "lat": 45.757440,
         "long": 4.773871,
@@ -84,7 +84,7 @@ let restaurantListe = [
         ]
     },
     {
-        "restaurantName": "KurgerBing",
+        "restaurantName": "Kurger Bing",
         "address": "118, avenue Charles de Gaulle, 69160 Tassin",
         "lat": 45.759157,
         "long": 4.775752,
@@ -100,7 +100,7 @@ let restaurantListe = [
         ]
     },
     {
-        "restaurantName": "MikadosPizza",
+        "restaurantName": "Mikados Pizza",
         "address": "17, avenue Marechal Foch, 69160 Tassin",
         "lat": 45.759963,
         "long": 4.773653,
@@ -116,7 +116,7 @@ let restaurantListe = [
         ]
     },
     {
-        "restaurantName": "FabuloGrill",
+        "restaurantName": "Fabulo Grill",
         "address": "8, avenue Mathieu Misery, 69160 Tassin",
         "lat": 45.757716,
         "long": 4.767311,
@@ -132,7 +132,7 @@ let restaurantListe = [
         ]
     },
     {
-        "restaurantName": "BigPerdant",
+        "restaurantName": "Big Perdant",
         "address": "43, avenue du 8 mai 45, 69160 Tassin",
         "lat": 45.760639,
         "long": 4.768282,
@@ -148,7 +148,7 @@ let restaurantListe = [
         ]
     },
     {
-        "restaurantName": "ShortePaille",
+        "restaurantName": "Shorte Paille",
         "address": "24, avenue de Lauterbourg, 69160 Tassin",
         "lat": 45.759300,
         "long": 4.778649,
@@ -164,7 +164,7 @@ let restaurantListe = [
         ]
     },
     {
-        "restaurantName": "ElPueblo",
+        "restaurantName": "El Pueblo",
         "address": "21, rue Roger Radisson, 69005 Lyon",
         "lat": 45.760232,
         "long": 4.817879,
