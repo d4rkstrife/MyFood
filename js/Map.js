@@ -78,23 +78,25 @@ class Map {
     })
     $('#add_restaurant').on('click', () => {
       event.preventDefault();
-      let name = $('#nom_restaurant').val();
-      let numero = $('#numero_adresse_restaurant').val();
-      let street = $('#rue_adresse_restaurant').val();
-      let postalCode = $('#code_adresse_restaurant').val();
-      let city = $('#ville_adresse_restaurant').val();
-      let adress = `${numero}, ${street}, ${postalCode} ${city}`
-      if (name && (numero && street && postalCode && city)) {
-        this.getPositionByAdress(adress, name);
-      } else if (!(numero && street && postalCode && city)) {
-        console.log("erreur adresse");
-        $('#adress_form input').css("border", "2px solid red");
-        $(`#user_comment form #erreur`).html("<p style='color : red'>Veuillez remplir tous les champs</p>");
-      } else {
-        console.log("erreur nom");
-        $('#nom_form input').css("border", "2px solid red");
-        $(`#user_comment form #erreur`).html("<p style='color : red'>Veuillez remplir tous les champs</p>");
+      let name = $('#nom_restaurant');
+      let numero = $('#numero_adresse_restaurant');
+      let street = $('#rue_adresse_restaurant');
+      let postalCode = $('#code_adresse_restaurant');
+      let city = $('#ville_adresse_restaurant');
 
+      if (name.val() && numero.val() && street.val() && postalCode.val() && city.val()) {
+        let adress = `${numero.val()}, ${street.val()}, ${postalCode.val()} ${city.val()}`
+        this.getPositionByAdress(adress, name.val());
+      } else {
+        let adressArray = [name, numero, street, postalCode, city];
+        adressArray.forEach((element) => {
+          if (!element.val()) {
+            element.css("border", "2px solid red");
+          } else {
+            element.css("border", "none");
+          }
+        })
+        $(`#user_comment form #erreur`).html("<p style='color : red'>Veuillez remplir tous les champs</p>");
       }
     })
   }

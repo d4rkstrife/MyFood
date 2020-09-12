@@ -1,7 +1,7 @@
 class Restaurant {
     constructor(data) {
         this.name = data.restaurantName
-        this.divName = this.name.replace(/ /g, "") + Math.floor(Math.random() * 100);
+        this.divName = this.name.replace(/ /g, "") + Math.floor(Math.random() * 10000);
         this.address = data.address;
         this.latitude = data.lat;
         this.longitude = data.long;
