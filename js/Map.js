@@ -103,6 +103,7 @@ class Map {
 
   userPositionAcquired(latitude, longitude) { //lorsque l on a accès à la position de l utilisateur
     let that = this;
+    this.getRestaurantFromGoogle(latitude, longitude)
     this.map = L.map(`${this.emplacement}`).setView([latitude, longitude], 16);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -161,6 +162,17 @@ class Map {
       $('#position').hide();
       this.getPositionByPostal(codePostal)
     });
+  }
+  async getRestaurantFromGoogle(latitude, longitude) {
+    fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`, {
+      mode: 'no-cors' // 'cors' by default
+    })
+      .then((reponse) => {
+        console.log(reponse.text())
+      })
+    console.log(data)
+
+
   }
 
   async getPositionByPostal(postalCode) {  //on interroge l api geo gouv afin d avoir le centre de la ville dont on a rentré le code postal.
