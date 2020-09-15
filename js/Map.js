@@ -164,15 +164,20 @@ class Map {
     });
   }
   async getRestaurantFromGoogle(latitude, longitude) {
-    fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`, {
-      mode: 'no-cors' // 'cors' by default
+   /*let reponse = await fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=45.7667,4.7833&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`,
+    {mode : "no-cors"})*/
+    console.log(latitude, longitude)
+    const proxyurl = "https://cors-anywhere.herokuapp.com/";
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=500&type=restaurant&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`; // site that doesn’t send Access-Control-* 
+    fetch(proxyurl + url) // https://cors-anywhere.herokuapp.com/https://example.com 
+    .then(response => response.json()) 
+  //  .then(contents => console.log(contents.results)) 
+  .then(contents => {
+    contents.results.forEach((element) => {
+      console.log(element.name)
     })
-      .then((reponse) => {
-        console.log(reponse.text())
-      })
-    console.log(data)
-
-
+  })
+    .catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
   }
 
   async getPositionByPostal(postalCode) {  //on interroge l api geo gouv afin d avoir le centre de la ville dont on a rentré le code postal.
