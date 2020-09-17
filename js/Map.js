@@ -3,6 +3,7 @@ class Map {
     this.emplacement = emplacement;
     this.restaurant = restaurant;
     this.map;
+    this.userPosition;
     this.markers = [];
     this.filtre = filtre;
     this.groupMarker = L.layerGroup([]);
@@ -25,6 +26,15 @@ class Map {
       event.preventDefault;
       $(`#user_comment`).empty();
       this.addRestaurant();
+    })
+
+    $('#search_init').on('click', () => {
+      event.preventDefault;
+      let position = this.map.getCenter();
+      console.log(position);
+      this.getRestaurantFromGoogle(position.lat, position.lng)
+
+
     })
 
   }
@@ -165,12 +175,28 @@ class Map {
   }
 
   async getRestaurantFromGoogle(latitude, longitude) {
-    let reponse = fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=45.7589,4.7719&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`, {
-      mode: 'no-cors' // 'cors' by default
-    })
-    let data = await reponse;
-    console.log(data)
-
+    /*let reponse = await fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=45.7667,4.7833&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`,
+     {mode : "no-cors"})*/
+    console.log(latitude, longitude)
+    const proxyurl = "https://cors-anywhere.herokuapp.com/";
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1000&type=restaurant&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`; // site that doesn’t send Access-Control-* 
+    fetch(proxyurl + url) // https://cors-anywhere.herokuapp.com/https://example.com 
+      .then(response => response.json())
+      //  .then(contents => console.log(contents.results)) 
+      .then(contents => {
+        contents.results.forEach((element) => {
+          let data = {
+            "restaurantName": element.name,
+            "address": element.vicinity,
+            "lat": element.geometry.location.lat,
+            "long": element.geometry.location.lng,
+            "ratings": []
+          }
+          console.log(element.name.replace(/ */g, ""));
+          this.refreshRestaurantListeNewRest(data)
+        })
+      })
+    // .catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
   }
 
   async getPositionByPostal(postalCode) {  //on interroge l api geo gouv afin d avoir le centre de la ville dont on a rentré le code postal.
@@ -191,7 +217,7 @@ class Map {
     $('#ville_adresse_restaurant').val(data.data[0].administrative_area);
   }
 
-  async getPositionByAdress(adresse, name) { //ajout d'un restaurant a la liste de restaurant suite a son ajout dans le formulaire
+  async getPositionByAdress(adresse, name) { //ajout d'un restaurant a la liste de restaurant suite a son ajout dans le formulaire 
     let response = await fetch(`http://api.positionstack.com/v1/forward?access_key=ad81b9c232a0cab345eef95c3036636d&query=${adresse}`);
     let placeData = await response.json();
     let place = placeData;
@@ -224,9 +250,11 @@ class Map {
     $('#restaurant_elt').empty();
     this.restaurantNear = [];
     this.restaurant.forEach(element => {
-      if (this.filtre.state === "off") {
+      if (this.filtre.state === "off") // && this.calculateDistance(this.userPosition.lat, this.userPosition.lng, element.latitude, element.longitude) < 1000) {
+      {
         this.restaurantRender(element);
-      } else if ((this.filtre.state === "on") && (element.ratingAverage >= this.filtre.min && element.ratingAverage <= this.filtre.max)) {
+      } else if ((this.filtre.state === "on"))// && this.calculateDistance(this.userPosition.lat, this.userPosition.lng, element.latitude, element.longitude) < 1000) {
+      {
         this.restaurantRender(element);
       }
     })
@@ -269,14 +297,14 @@ class Map {
     });
   }
 
-  /*   calculateDistance(lat1, long1, lat2, long2) { //comparer position de l utilisateur avec la position du restaurant pour savoir si on doit l afficher
-         let p = 0.017453292519943295;    // Math.PI / 180
-         let c = Math.cos;
-         let a = 0.5 - c((lat2 - lat1) * p) / 2 +
-             c(lat1 * p) * c(lat2 * p) *
-             (1 - c((long2 - long1) * p)) / 2;
- 
-         return 12742 * Math.asin(Math.sqrt(a));
-     }*/
+  calculateDistance(lat1, long1, lat2, long2) { //comparer position de l utilisateur avec la position du restaurant pour savoir si on doit l afficher
+    let p = 0.017453292519943295;    // Math.PI / 180
+    let c = Math.cos;
+    let a = 0.5 - c((lat2 - lat1) * p) / 2 +
+      c(lat1 * p) * c(lat2 * p) *
+      (1 - c((long2 - long1) * p)) / 2;
+
+    return 12742 * Math.asin(Math.sqrt(a));
+  }
 
 }
