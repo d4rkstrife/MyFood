@@ -163,15 +163,13 @@ class Map {
       this.getPositionByPostal(codePostal)
     });
   }
+
   async getRestaurantFromGoogle(latitude, longitude) {
-    fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`, {
+    let reponse = fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=45.7589,4.7719&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`, {
       mode: 'no-cors' // 'cors' by default
     })
-      .then((reponse) => {
-        console.log(reponse.text())
-      })
+    let data = await reponse;
     console.log(data)
-
 
   }
 
