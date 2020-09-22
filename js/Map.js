@@ -31,7 +31,6 @@ class Map {
     $('#search_init').on('click', () => {
       event.preventDefault;
       let position = this.map.getCenter();
-      console.log(position);
       this.getRestaurantFromGoogle(position.lat, position.lng)
 
 
@@ -81,12 +80,12 @@ class Map {
 
     this.showUserComment();
 
-    $('#cancel_newrestaurant').on('click', () => {
+    $('#cancel_newrestaurant').on('click', (event) => {
       event.preventDefault();
       $(`#user_comment`).empty();
       $(`#user_comment`).hide();
     })
-    $('#add_restaurant').on('click', () => {
+    $('#add_restaurant').on('click', (event) => {
       event.preventDefault();
       let name = $('#nom_restaurant');
       let numero = $('#numero_adresse_restaurant');
@@ -114,7 +113,7 @@ class Map {
   userPositionAcquired(latitude, longitude) { //lorsque l on a accès à la position de l utilisateur
     let that = this;
     this.getRestaurantFromGoogle(latitude, longitude)
-    this.map = L.map(`${this.emplacement}`).setView([latitude, longitude], 16);
+    this.map = L.map(`${this.emplacement}`).setView([latitude, longitude], 14);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
       maxZoom: 18,
@@ -124,9 +123,6 @@ class Map {
       accessToken: 'pk.eyJ1IjoiZDRya3N0cmlmZSIsImEiOiJja2QxdXc2cTUxMGx5MnJvN2N3azU1Z2FzIn0.ZkS1QneAeZBKnyju3c5CQA'
     }).addTo(this.map);
     let marker = L.marker([latitude, longitude]).addTo(this.map);
-    this.getNearestRestaurant(latitude, longitude);
-    this.map.addLayer(this.groupMarker);
-
     this.map.on('click', function (e) { // event du clic sur la map qui permet l ajout de restaurant
       var coord = e.latlng;
       var lat = coord.lat;
@@ -136,15 +132,16 @@ class Map {
     });
 
 
+
     $('#filter_button').on('click', () => { //event du bouton valider du filtre
       event.preventDefault();
-      this.filtre.state = "on";
+      that.filtre.state = "on";
       if ($(`#minimum`).val() >= $(`#maximum`).val()) {
         const min = $(`#minimum`).val();
         $(`#minimum`).val($(`#maximum`).val());
         $(`#maximum`).val(min);
       }
-      this.filtre.init(this);
+      this.filtre.newInit(this);
     });
 
     $('#reinit_button').on('click', () => { //event du bouton annuler du filtre
@@ -152,7 +149,7 @@ class Map {
       this.filtre.state = "off";
       $(`#minimum`).val(1)
       $(`#maximum`).val(5);
-      this.filtre.init(this);
+      this.filtre.newInit(this);
     })
   }
 
@@ -162,27 +159,37 @@ class Map {
         <form>
           <input name="code postal" id="code" cols="20" rows="10"></input>
           <button id="validate">Valider</button>
+          <div id="invalid_postal"></div>
         </form>
-      </div>`)
+      `)
     $('#position').show();
     $('#validate').on('click', (e) => {
       e.preventDefault();
 
+
       let codePostal = $('#code').val().replace(/<(?:.|\s)*?>/g, "");
-      $('#position').hide();
-      this.getPositionByPostal(codePostal)
+      if (codePostal) {
+        this.getPositionByPostal(codePostal);
+      } else {
+        $('#invalid_postal').html(`
+        <p style="color : red">Veuillez entrer un code postal</p>
+        `)
+        $('#code').css("border", "2px solid red");
+      }
+
     });
   }
 
   async getRestaurantFromGoogle(latitude, longitude) {
-    /*let reponse = await fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=45.7667,4.7833&radius=1500&type=restaurant&keyword=cruise&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`,
-     {mode : "no-cors"})*/
-    console.log(latitude, longitude)
+    this.restaurant = [];
+    let position = {
+      "lat": latitude,
+      "lng": longitude
+    }
     const proxyurl = "https://cors-anywhere.herokuapp.com/";
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1000&type=restaurant&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`; // site that doesn’t send Access-Control-* 
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=restaurant&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`; // site that doesn’t send Access-Control-* 
     fetch(proxyurl + url) // https://cors-anywhere.herokuapp.com/https://example.com 
       .then(response => response.json())
-      //  .then(contents => console.log(contents.results)) 
       .then(contents => {
         contents.results.forEach((element) => {
           let data = {
@@ -190,22 +197,34 @@ class Map {
             "address": element.vicinity,
             "lat": element.geometry.location.lat,
             "long": element.geometry.location.lng,
-            "ratings": []
+            "ratings": [{
+              "stars": element.rating,
+              "comment": "Moyenne des avis Google"
+            }]
           }
-          console.log(element.name.replace(/ */g, ""));
-          this.refreshRestaurantListeNewRest(data)
+          this.refreshRestaurantListeNewRest(data, position)
         })
       })
-    // .catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
   }
 
   async getPositionByPostal(postalCode) {  //on interroge l api geo gouv afin d avoir le centre de la ville dont on a rentré le code postal.
     let reponse = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${postalCode}&fields=centre&format=json&geometry=centre`);
     let data = await reponse.json();
     let ville = data;
-    let latitude = ville[0].centre.coordinates[1];
-    let longitude = ville[0].centre.coordinates[0];
-    this.userPositionAcquired(latitude, longitude);
+    if (ville.length != 0) {
+      console.log(ville)
+      let latitude = ville[0].centre.coordinates[1];
+      let longitude = ville[0].centre.coordinates[0];
+      $('#position').hide();
+      this.userPositionAcquired(latitude, longitude);
+    } else {
+      console.log("pas de code postal")
+      $('#invalid_postal').html(`
+      <p style="color : red">Code postal non valide</p>
+      `)
+      $('#code').css("border", "2px solid red");
+    }
+
   }
 
   async getPostalByPosition(latitude, longitude) { // permet de remplir les cases adresse du formulaire ajout de restaurant lors du clic sur la carte
@@ -223,6 +242,10 @@ class Map {
     let place = placeData;
     let latitude = place.data[0].latitude;
     let longitude = place.data[0].longitude;
+    let position = {
+      "lat": place.data[0].latitude,
+      "lng": place.data[0].longitude
+    }
 
     let data = {
       "restaurantName": name.replace(/<(?:.|\s)*?>/g, ""),
@@ -231,16 +254,15 @@ class Map {
       "long": longitude,
       "ratings": []
     }
-    this.refreshRestaurantListeNewRest(data)
+    this.refreshRestaurantListeNewRest(data, position)
   }
 
-  refreshRestaurantListeNewRest(data) {//rafraichir liste des restaurant après
+  refreshRestaurantListeNewRest(data, position) {//rafraichir liste des restaurant après
     let newRestaurant = new Restaurant(data);//nouvel objet restaurant créé
-    newRestaurant.ratingAverage = 0;
     this.restaurant.push(newRestaurant); //on le rajoute à la collection de restaurants
     this.map.removeLayer(this.groupMarker); // on supprime tous les marqueurs
     this.groupMarker = L.layerGroup([]);
-    this.getNearestRestaurant();
+    this.getNearestRestaurant(position);
     this.map.addLayer(this.groupMarker); //on remet tous les marqueurs dont le nouveau restaurant.*/
     $(`#user_comment`).empty();
     $(`#user_comment`).hide();
@@ -248,13 +270,10 @@ class Map {
 
   getNearestRestaurant() {
     $('#restaurant_elt').empty();
-    this.restaurantNear = [];
     this.restaurant.forEach(element => {
-      if (this.filtre.state === "off") // && this.calculateDistance(this.userPosition.lat, this.userPosition.lng, element.latitude, element.longitude) < 1000) {
-      {
+      if (this.filtre.state === "off") {
         this.restaurantRender(element);
-      } else if ((this.filtre.state === "on"))// && this.calculateDistance(this.userPosition.lat, this.userPosition.lng, element.latitude, element.longitude) < 1000) {
-      {
+      } else if ((this.filtre.state === "on") && (element.ratingAverage >= this.filtre.min && element.ratingAverage <= this.filtre.max)) {
         this.restaurantRender(element);
       }
     })
@@ -274,7 +293,6 @@ class Map {
         element.ratingsRender(this);
       });
     this.groupMarker.addLayer(circle);
-
     $(`#restaurant_elt`).append(`
     <div id="${element.divName}" class="restaurant_div">
     <div class="nom_etoiles">
@@ -295,16 +313,6 @@ class Map {
       }
       element.ratingsRender(this);
     });
-  }
-
-  calculateDistance(lat1, long1, lat2, long2) { //comparer position de l utilisateur avec la position du restaurant pour savoir si on doit l afficher
-    let p = 0.017453292519943295;    // Math.PI / 180
-    let c = Math.cos;
-    let a = 0.5 - c((lat2 - lat1) * p) / 2 +
-      c(lat1 * p) * c(lat2 * p) *
-      (1 - c((long2 - long1) * p)) / 2;
-
-    return 12742 * Math.asin(Math.sqrt(a));
   }
 
 }

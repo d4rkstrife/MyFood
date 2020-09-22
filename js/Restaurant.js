@@ -24,7 +24,6 @@ class Restaurant {
 
     ratingsRender(map) { //rendu du formulaire d'ajout d'avis et de tous les avis utilisateurs.
         if (!this.isRatingsShow) {
-            console.log("open");
             map.map.setView([this.latitude, this.longitude], 16);
             $(`#${this.divName} .avis_utilisateurs`).html(`
                             <form>
@@ -96,7 +95,6 @@ class Restaurant {
 
     closeRating() {
         $(`#${this.divName} .avis_utilisateurs`).html("");
-        console.log("close");
         this.isRatingsShow = false;
     }
 }

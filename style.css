@@ -11,6 +11,9 @@ body{
     color: #f9fafc;
    font-family: 'Comfortaa', sans-serif;
 }
+header {
+  height : 125px;
+}
 
 main {
     display : flex;
@@ -18,7 +21,7 @@ main {
 }
   
 #mapid {
-      height : 700px;
+      height : 680px;
       width: 70%;
       z-index: 1;
     }
@@ -36,9 +39,12 @@ h1 {
       border: 1px solid black;
       display: flex;
       flex-direction: column;
-      height: 750px;
+      height: 730px;
       width : 25%;
       overflow-x: auto; 
+    }
+#restaurant_elt h2 {
+      display : none;
     }
 .restaurant_div {
       text-align: center;
@@ -109,7 +115,7 @@ textarea{
   }
 #show_add_elt{
       position : absolute;
-      top : 828px;
+      top : 808px;
   }
 #show_add_elt h4{
       margin-bottom: 0;
@@ -126,7 +132,7 @@ button{
     position: absolute;
     border: 5px solid #d8d8d7;
     border-radius : 20px;
-    top: 120px;
+    top: 149px;
     left: 20%;
     width: 320px;
     height: 50px;
@@ -134,19 +140,75 @@ button{
 .leaflet-popup-content-wrapper {
       border-radius : 0;
   }
+  .leaflet-control-attribution {
+    display : none;
+  }
+  #mobile_button{
+    display:none;
+  }
   @media screen and (max-width: 1000px){
-      main {
+    body{
+      width : 100%;
+      height : 100%;
+      margin : 0;
+    }
+    header{
+      width: 100%;
+      height: 19%;
+    }
+    header h1{
+      margin: 10px 0 0 0;
+    }
+    main {
           flex-direction: column;
       }
-      #mapid {
+    #mapid {
           width: 100%;
+          height : 450px;
       }
-      #restaurant_elt {
-          width : 100%;
+    #restaurant_elt {
+    display : none;
+    position : absolute;
+    top : 5%;
+    left : 0%;
+    width : 100%;
+    height : 70%;
+    z-index : 4;
       }
-      #show_add_elt {
-          position : relative;
-          top : 0;
-      }
+    #position {
+      left: 10%;
+    }
+    #search_init{
+      left : 12%;
+      width : 60%;
+    }
+    #user_comment{
+      left: 10%;
+      top: 32%;
+    }
+    #show_add_elt {
+      display: flex;
+      position : fixed;
+      flex-direction: row;
+      justify-content: space-around;
+      top: 90%;
+      left : 0;
+      background-color: grey;
+      width : 100%;
+      height: 45px;
+    }
+    #show_add_elt h4 {
+      display : none;
+    }
+
+    #mobile_button{
+      display : block;
+      z-index: 5;
+      background-color: white;
+    }
+    #mobile_button_image{
+      width: 30px;
+      height : 30px;
+    }
 
   }

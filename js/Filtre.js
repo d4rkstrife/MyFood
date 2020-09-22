@@ -7,12 +7,20 @@ class Filtre {
     this.max = 5;
     this.state = "off";
   }
-  init(map) {
+
+  newInit(map) {
     this.min = $(`#${this.minElt}`).val();
     this.max = $(`#${this.maxElt}`).val();
     map.map.removeLayer(map.groupMarker);
     map.groupMarker = L.layerGroup([]);
-    map.getNearestRestaurant();
+    $('#restaurant_elt').empty();
+    map.restaurant.forEach(element => {
+      if (this.state === "off") {
+        map.restaurantRender(element);
+      } else if ((this.state === "on") && (element.ratingAverage >= this.min && element.ratingAverage <= this.max)) {
+        map.restaurantRender(element);
+      }
+    })
     map.map.addLayer(map.groupMarker);
   }
 
