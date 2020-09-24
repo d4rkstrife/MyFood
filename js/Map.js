@@ -7,6 +7,8 @@ class Map {
     this.markers = [];
     this.filtre = filtre;
     this.groupMarker = L.layerGroup([]);
+    this.positionMarker = L.layerGroup([]);
+    this.mapIsInit = false;
   }
 
   init() {
@@ -22,13 +24,13 @@ class Map {
     } else { //le navigateur ne prend pas en charge la localisation.
       console.log("votre navigateur ne prend pas en charge la localisation")
     }
-    $('#show_newrest_elt').on('click', () => {
+    $('#show_newrest_elt').on('click', (event) => {
       event.preventDefault;
       $(`#user_comment`).empty();
       this.addRestaurant();
     })
 
-    $('#search_init').on('click', () => {
+    $('#search_init').on('click', (event) => {
       event.preventDefault;
       let position = this.map.getCenter();
       this.getRestaurantFromGoogle(position.lat, position.lng)
@@ -73,7 +75,7 @@ class Map {
     `)
   }
 
-  addRestaurant(latitude, longitude) { //permet de rajouter un restaurant lors du clic sur la carte ou sur le bouton
+  addRestaurant(latitude, longitude) { //permet de rajouter un restaurant(appelée lors du clic sur la carte ou sur le bouton)
     if (latitude && longitude) {
       this.getPostalByPosition(latitude, longitude);
     };
@@ -93,9 +95,12 @@ class Map {
       let postalCode = $('#code_adresse_restaurant');
       let city = $('#ville_adresse_restaurant');
 
-      if (name.val() && numero.val() && street.val() && postalCode.val() && city.val()) {
+      if (name.val() && numero.val() && street.val() && postalCode.val() && city.val()) {//lorsque tous les champs sont correctement remplis
         let adress = `${numero.val()}, ${street.val()}, ${postalCode.val()} ${city.val()}`
         this.getPositionByAdress(adress, name.val());
+        $(`#user_comment`).empty();
+        $(`#user_comment`).hide();
+
       } else {
         let adressArray = [name, numero, street, postalCode, city];
         adressArray.forEach((element) => {
@@ -105,24 +110,34 @@ class Map {
             element.css("border", "none");
           }
         })
-        $(`#user_comment form #erreur`).html("<p style='color : red'>Veuillez remplir tous les champs</p>");
+        $(`#user_comment form #erreur`).html("<p style='color : red'>Veuillez remplir tous les champs</p>");//erreur lorsqu'il manque des champs
       }
     })
   }
 
   userPositionAcquired(latitude, longitude) { //lorsque l on a accès à la position de l utilisateur
     let that = this;
-    this.getRestaurantFromGoogle(latitude, longitude)
-    this.map = L.map(`${this.emplacement}`).setView([latitude, longitude], 14);
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      maxZoom: 18,
-      id: 'mapbox/streets-v11',
-      tileSize: 512,
-      zoomOffset: -1,
-      accessToken: 'pk.eyJ1IjoiZDRya3N0cmlmZSIsImEiOiJja2QxdXc2cTUxMGx5MnJvN2N3azU1Z2FzIn0.ZkS1QneAeZBKnyju3c5CQA'
-    }).addTo(this.map);
-    let marker = L.marker([latitude, longitude]).addTo(this.map);
+    this.getRestaurantFromGoogle(latitude, longitude);
+    if (this.mapIsInit === false) { // si la carte n est pas encore initialisée
+      this.mapIsInit = true;
+      this.map = L.map(`${this.emplacement}`).setView([latitude, longitude], 15);
+      L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox/streets-v11',
+        tileSize: 512,
+        zoomOffset: -1,
+        accessToken: 'pk.eyJ1IjoiZDRya3N0cmlmZSIsImEiOiJja2QxdXc2cTUxMGx5MnJvN2N3azU1Z2FzIn0.ZkS1QneAeZBKnyju3c5CQA'
+      }).addTo(this.map);
+    } else { // si la carte est déjà initialisée
+      this.map.setView([latitude, longitude], 15);//on rajoute le marqueur de la position après avoir supprimé l ancien; 
+    }
+    this.map.removeLayer(this.positionMarker)
+    this.positionMarker = L.layerGroup([]);
+    let marker = L.marker([latitude, longitude]);
+    this.positionMarker.addLayer(marker);
+    this.map.addLayer(this.positionMarker);
+
     this.map.on('click', function (e) { // event du clic sur la map qui permet l ajout de restaurant
       var coord = e.latlng;
       var lat = coord.lat;
@@ -131,9 +146,7 @@ class Map {
       that.addRestaurant(lat, lng);
     });
 
-
-
-    $('#filter_button').on('click', () => { //event du bouton valider du filtre
+    $('#filter_button').on('click', (event) => { //event du bouton valider du filtre
       event.preventDefault();
       that.filtre.state = "on";
       if ($(`#minimum`).val() >= $(`#maximum`).val()) {
@@ -144,7 +157,7 @@ class Map {
       this.filtre.newInit(this);
     });
 
-    $('#reinit_button').on('click', () => { //event du bouton annuler du filtre
+    $('#reinit_button').on('click', (event) => { //event du bouton annuler du filtre
       event.preventDefault();
       this.filtre.state = "off";
       $(`#minimum`).val(1)
@@ -165,9 +178,7 @@ class Map {
     $('#position').show();
     $('#validate').on('click', (e) => {
       e.preventDefault();
-
-
-      let codePostal = $('#code').val().replace(/<(?:.|\s)*?>/g, "");
+      let codePostal = $('#code').val().replace(/<(?:.|\s)*?>/g, "");//on supprime d eventuelles balises
       if (codePostal) {
         this.getPositionByPostal(codePostal);
       } else {
@@ -180,19 +191,19 @@ class Map {
     });
   }
 
-  async getRestaurantFromGoogle(latitude, longitude) {
-    this.restaurant = [];
+  async getRestaurantFromGoogle(latitude, longitude) { //on récupère les restaurants les plus proches de la position transmise 
+    this.restaurant = []; //on vide la collection de restaurants.
     let position = {
       "lat": latitude,
       "lng": longitude
     }
     const proxyurl = "https://cors-anywhere.herokuapp.com/";
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=restaurant&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`; // site that doesn’t send Access-Control-* 
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&type=restaurant&rankby=distance&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`; // site that doesn’t send Access-Control-* 
     fetch(proxyurl + url) // https://cors-anywhere.herokuapp.com/https://example.com 
       .then(response => response.json())
       .then(contents => {
         contents.results.forEach((element) => {
-          let data = {
+          let data = { //on organise la reponse pour la transmettre à la méthode qui va creer le nouvel objet restaurant
             "restaurantName": element.name,
             "address": element.vicinity,
             "lat": element.geometry.location.lat,
@@ -202,7 +213,8 @@ class Map {
               "comment": "Moyenne des avis Google"
             }]
           }
-          this.refreshRestaurantListeNewRest(data, position)
+          this.refreshRestaurantListeNewRest(data, position);
+          this.mapUpdate();
         })
       })
   }
@@ -212,7 +224,6 @@ class Map {
     let data = await reponse.json();
     let ville = data;
     if (ville.length != 0) {
-      console.log(ville)
       let latitude = ville[0].centre.coordinates[1];
       let longitude = ville[0].centre.coordinates[0];
       $('#position').hide();
@@ -257,15 +268,17 @@ class Map {
     this.refreshRestaurantListeNewRest(data, position)
   }
 
-  refreshRestaurantListeNewRest(data, position) {//rafraichir liste des restaurant après
-    let newRestaurant = new Restaurant(data);//nouvel objet restaurant créé
-    this.restaurant.push(newRestaurant); //on le rajoute à la collection de restaurants
+  mapUpdate() {//rendu des restaurant sur la carte
     this.map.removeLayer(this.groupMarker); // on supprime tous les marqueurs
     this.groupMarker = L.layerGroup([]);
     this.getNearestRestaurant(position);
-    this.map.addLayer(this.groupMarker); //on remet tous les marqueurs dont le nouveau restaurant.*/
-    $(`#user_comment`).empty();
-    $(`#user_comment`).hide();
+    this.map.addLayer(this.groupMarker); //on remet tous les marqueurs dont le nouveau restaurant.
+  }
+
+  refreshRestaurantListeNewRest(data) {//rafraichir liste des restaurant après
+    let newRestaurant = new Restaurant(data);//nouvel objet restaurant créé
+    this.restaurant.push(newRestaurant); //on le rajoute à la collection de restaurants
+    this.mapUpdate();
   }
 
   getNearestRestaurant() {
