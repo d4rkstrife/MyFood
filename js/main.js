@@ -9,5 +9,4 @@ $('#mobile_button').on('click', () => {
     } else {
         $('#restaurant_elt').hide();
     }
-    console.log($('#restaurant_elt').css("display"));
 })

@@ -1,10 +1,8 @@
 class Map {
-  constructor(emplacement, restaurant, filtre) {
+  constructor(emplacement, filtre) {
     this.emplacement = emplacement;
-    this.restaurant = restaurant;
+    this.restaurant = [];
     this.map;
-    this.userPosition;
-    this.markers = [];
     this.filtre = filtre;
     this.groupMarker = L.layerGroup([]);
     this.positionMarker = L.layerGroup([]);
@@ -12,7 +10,6 @@ class Map {
   }
 
   init() {
-    let that = this;
     if (navigator.geolocation) { //le navigator prend en charger la localisation
       let watchId = navigator.geolocation.getCurrentPosition((position) => {
 
@@ -22,7 +19,7 @@ class Map {
         this.userPositionDenied()
       );
     } else { //le navigateur ne prend pas en charge la localisation.
-      console.log("votre navigateur ne prend pas en charge la localisation")
+      this.userPositionDenied();
     }
     $('#show_newrest_elt').on('click', (event) => {
       event.preventDefault;
@@ -34,8 +31,6 @@ class Map {
       event.preventDefault;
       let position = this.map.getCenter();
       this.getRestaurantFromGoogle(position.lat, position.lng)
-
-
     })
 
   }
@@ -51,7 +46,7 @@ class Map {
   showUserComment() { //fait apparaitre la div permettant d ajouter un restaurant
     $(`#user_comment`).show();
     $(`#user_comment`).append(`
-    <h3>Rajouter un restaurant</h3>
+    <h3>Ajouter un restaurant</h3>
     <form>
     <div id="nom_form">
       <label for="nom_restaurant">Nom du restaurant:</label><br>
@@ -238,7 +233,8 @@ class Map {
 
   }
 
-  async getPostalByPosition(latitude, longitude) { // permet de remplir les cases adresse du formulaire ajout de restaurant lors du clic sur la carte
+  async getPostalByPosition(latitude, longitude) { // permet de remplir les cases adresse du formulaire ajout de restaurant lors du clic sur la carte, en récuperant l'adresse
+    // d'après les coordonnées
     let response = await fetch(`http://api.positionstack.com/v1/reverse?access_key=ad81b9c232a0cab345eef95c3036636d&query=${latitude},${longitude}`);
     let data = await response.json();
     $('#numero_adresse_restaurant').val(data.data[0].number);
@@ -247,7 +243,7 @@ class Map {
     $('#ville_adresse_restaurant').val(data.data[0].administrative_area);
   }
 
-  async getPositionByAdress(adresse, name) { //ajout d'un restaurant a la liste de restaurant suite a son ajout dans le formulaire 
+  async getPositionByAdress(adresse, name) { //ajout d'un restaurant a la liste de restaurant suite a son ajout dans le formulaire, récupère les coordonnées d'après l'adresse.
     let response = await fetch(`http://api.positionstack.com/v1/forward?access_key=ad81b9c232a0cab345eef95c3036636d&query=${adresse}`);
     let placeData = await response.json();
     let place = placeData;
