@@ -198,6 +198,9 @@ class Map {
       .then(response => response.json())
       .then(contents => {
         contents.results.forEach((element) => {
+          if (element.rating === undefined) {
+            element.rating = 0;
+          }
           let data = { //on organise la reponse pour la transmettre à la méthode qui va creer le nouvel objet restaurant
             "restaurantName": element.name,
             "address": element.vicinity,
