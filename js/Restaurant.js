@@ -24,7 +24,7 @@ class Restaurant {
 
     ratingsRender(map) { //rendu du formulaire d'ajout d'avis et de tous les avis utilisateurs.
         if (!this.isRatingsShow) {
-            map.map.setView([this.latitude, this.longitude], 16);
+            map.map.setView([this.latitude, this.longitude], 17);
             $(`#${this.divName} .avis_utilisateurs`).html(`
                             <form>
                             <label for="note">Noter le restaurant :</label>
