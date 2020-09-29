@@ -52,10 +52,10 @@ class Restaurant {
         }
 
         //event du click sur le formulaire
-        $(`#${this.divName} .avis_utilisateurs form`).on('click', () => {
+        $(`#${this.divName} .avis_utilisateurs form`).on('click', (event) => {
             event.stopPropagation();
         })
-        $('#valider_avis').on('click', () => {//event du clique sur le bouton valider du formulaire d ajout d avis
+        $('#valider_avis').on('click', (event) => {//event du clique sur le bouton valider du formulaire d ajout d avis
             event.preventDefault();
             let stars = parseInt($('#note').val());
             let comment = $('#avis').val().replace(/<(?:.|\s)*?>/g, "");
