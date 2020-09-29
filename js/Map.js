@@ -212,7 +212,6 @@ class Map {
             }]
           }
           this.refreshRestaurantListeNewRest(data, position);
-          this.mapUpdate();
         })
       })
   }
