@@ -8,6 +8,7 @@ class Restaurant {
         this.rating = data.ratings;
         this.ratingAverage = this.calculateRatingAverage(this.rating);
         this.isRatingsShow = false;
+        this.streetView = this.getStreetView();
     }
 
     calculateRatingAverage(rating) {
@@ -22,10 +23,17 @@ class Restaurant {
         }
     }
 
+    async getStreetView() {//on récupère la photo street view et on 
+        let response = fetch(`https://maps.googleapis.com/maps/api/streetview?size=400x200&fov=90&location=${this.name},${this.address}&key=AIzaSyDHewuFhhdEj6CjeUotALhXvbNs6DsOjik`)
+        let data = await response;
+        this.streetView = data.url;
+    }
+
     ratingsRender(map) { //rendu du formulaire d'ajout d'avis et de tous les avis utilisateurs.
         if (!this.isRatingsShow) {
             map.map.setView([this.latitude, this.longitude], 17);
             $(`#${this.divName} .avis_utilisateurs`).html(`
+                            <img class="image_street_view" src="${this.streetView}" alt ="image street view">
                             <form>
                             <label for="note">Noter le restaurant :</label>
                             <select name="note" id="note">

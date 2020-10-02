@@ -46,6 +46,9 @@ h1 {
 #restaurant_elt h2 {
       display : none;
     }
+.image_street_view{
+  width : 90%;
+}
 .restaurant_div {
       text-align: center;
       border : 3px solid #d8d8d7;
